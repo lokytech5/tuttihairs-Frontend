@@ -18,48 +18,34 @@ import Link from '@mui/material/Link';
 import { styled } from "@mui/system";
 
 
-const useStyles = styled((theme) => ({
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    backgroundColor: theme.palette.background.default,
-  },
-  paper: {
-    padding: theme.spacing(4),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
-  },
-  link: {
-    textAlign: 'center',
-    marginTop: theme.spacing(2),
-  },
-  form: {
-    width: '100%',
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  responsivePaper: {
-    [theme.breakpoints.down('xs')]: {
-      borderRadius: 0,
-      minHeight: '100vh',
-    },
-  },
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+}));
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+  margin: theme.spacing(1),
+  backgroundColor: theme.palette.primary.main,
+}));
+
+const StyledTypography = styled(Typography)({
+  textAlign: "center",
+  marginTop: "theme.spacing(2)",
+});
+
+
+const FormContainer = styled('div')(({ theme }) => ({
+  width: '100%',
+  marginTop: theme.spacing(1),
 }));
 
 const RegisterButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(3, 0, 2),
 }));
 
-const formValidationSchema = ({
+const formValidationSchema = z.object({
   username: z.string().nonempty('Name is required'),
   email: z.string().nonempty('Email is required'),
   password: z.string().nonempty('Password is required'),
@@ -67,7 +53,7 @@ const formValidationSchema = ({
 
 export default function RegisterForm(props) {
 
-  const classes = useStyles();
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
   const {
@@ -92,6 +78,7 @@ export default function RegisterForm(props) {
   const password = watch('password', '');
 
   return (
+
     <Container
       component="main"
       maxWidth="xs"
@@ -102,117 +89,114 @@ export default function RegisterForm(props) {
         justifyContent: 'center',
         minHeight: '100vh',
         padding: 0,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.background.default
       }}
     >
-      <Paper
-        className={`${classes.paper} ${isMobile ? classes.responsivePaper : ''
-          }`}
-        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-      >
-        <Avatar sx={{ margin: 1, backgroundColor: theme.palette.primary.main }}>
+      <StyledPaper>
+        <StyledAvatar>
           <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
+        </StyledAvatar>
+        <StyledTypography component="h1" variant="h5">
           Register
-        </Typography>
-        <form className={classes.form} noValidate onSubmit={handleSubmit(handleFormSubmit)}>
+        </StyledTypography>
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
+          <FormContainer>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              {...register('username')}
+              error={errors.username ? true : false}
+              helperText={errors.username ? errors.username.message : ''}
+            />
 
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            {...register('username')}
-            error={errors.username ? true : false}
-            helperText={errors.username ? errors.username.message : ''}
-          />
-
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            {...register('email', {
-              required: true,
-              pattern: {
-                value: /^\S+@\S+$/i,
-                message: 'Invalid email address',
-              },
-            })}
-            error={errors.email ? true : false}
-            helperText={errors.email ? errors.email.message : ''}
-          />
-
-
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="password"
-            label="Password"
-            name="password"
-            autoComplete="password"
-            {...register('password', {
-              required: 'Password is required',
-              minLength: {
-                value: 6,
-                message: 'Password must be at least 6 characters',
-              },
-            })}
-            error={errors.password ? true : false}
-            helperText={errors.password ? errors.password.message : ''}
-          />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              {...register('email', {
+                required: true,
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: 'Invalid email address',
+                },
+              })}
+              error={errors.email ? true : false}
+              helperText={errors.email ? errors.email.message : ''}
+            />
 
 
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="confirmPassword"
-            type="password"
-            id="confirmPassword"
-            autoComplete="new-password"
-            {...register('confirmPassword', {
-              required: 'Confirm password is required',
-              validate: (value) =>
-                value === password || 'Passwords must match',
-            })}
-            error={errors.confirmPassword ? true : false}
-            helperText={
-              errors.confirmPassword ? errors.confirmPassword.message : ''
-            }
-          />
-          <RegisterButton
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Register
-          </RegisterButton>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="password"
+              type="password"
+              label="Password"
+              name="password"
+              autoComplete="password"
+              {...register('password', {
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be at least 6 characters',
+                },
+              })}
+              error={errors.password ? true : false}
+              helperText={errors.password ? errors.password.message : ''}
+            />
+
+
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="confirmPassword"
+              label="confirmPassword"
+              type="password"
+              id="confirmPassword"
+              autoComplete="new-password"
+              {...register('confirmPassword', {
+                required: 'Confirm password is required',
+                validate: (value) =>
+                  value === password || 'Passwords must match',
+              })}
+              error={errors.confirmPassword ? true : false}
+              helperText={
+                errors.confirmPassword ? errors.confirmPassword.message : ''
+              }
+            />
+            <RegisterButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              Register
+            </RegisterButton>
+          </FormContainer>
         </form>
-        <Typography component="div" className={classes.link}>
-          Already have an account?{' '}
-          <Link href="/login" variant="body2">
+        <StyledTypography>
+          Already have an account?&nbsp;
+          <Link component={RouterLink} to="/login" variant="body2">
             Sign in
           </Link>
-        </Typography>
-      </Paper>
+        </StyledTypography>
+      </StyledPaper>
     </Container>
   )
 }

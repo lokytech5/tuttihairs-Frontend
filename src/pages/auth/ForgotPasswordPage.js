@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import ForgotPasswordForm from '../components/auth/ForgotPasswordForm'
+import ForgotPasswordForm from '../../components/auth/ForgotPasswordForm'
 import axios from 'axios'
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 
 export default function ForgotPasswordPage() {
     const [formData, setFormData] = useState(null);

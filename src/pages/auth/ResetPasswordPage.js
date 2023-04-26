@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 
-import ResetPasswordForm from '../components/auth/ResetPasswordForm'
+import ResetPasswordForm from '../../components/auth/ResetPasswordForm'
 export default function ResetPasswordPage() {
     const [formData, setFormData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);

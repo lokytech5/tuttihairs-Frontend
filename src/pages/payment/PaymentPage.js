@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import PaymentGateWay from '../components/payment/PaymentGateWay';
+import PaymentGateWay from '../../components/payment/PaymentGateWay';
 
 export default function PaymentPage() {
     const [loading, setLoading] = useState(false);

@@ -34,6 +34,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { alpha } from '@mui/material/styles';
 
 import useStore from '../../zustand/store';
+import UsersMenu from '../users/UsersMenu';
 
 const BrandContainer = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -102,6 +103,7 @@ export default function Navigation() {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchDialogOpen, setSearchDialogOpen] = useState(false);
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const searchInputRef = useRef(null);
     const isAuthenticated = useStore((state) => state.isAuthenticated);
     const role = useStore((state) => state.role);
@@ -149,7 +151,8 @@ export default function Navigation() {
         // Replace this with the actual function to fetch the profile image URL from the backend
         const fetchProfileImage = async () => {
             // ...fetch profile image URL and update the state
-            setProfileImageUrl('https://example.com/profile_image.jpg');
+            setProfileImageUrl(null);
+            setIsLoading(false);
         };
 
         fetchProfileImage();
@@ -272,7 +275,7 @@ export default function Navigation() {
                     </Hidden>
                     <Hidden smDown>
 
-                        {!isAuthenticated ? (
+                        {!isAuthenticated && (
                             <>
                                 <Button color="inherit" component={Link} to="/login">
                                     Login
@@ -281,25 +284,20 @@ export default function Navigation() {
                                     Register
                                 </Button>
                             </>
-                        ) : (
-                            <Button color="inherit" onClick={logout}>
-                                Logout
-                            </Button>
                         )}
 
                         <Button color="inherit" component={Link} to="/payment">
                             Payment
                         </Button>
+
                         {isAuthenticated && role === 'user' && (
-                            profileImageUrl ? (
-                                <IconButton component={Link} to="/profile">
-                                    <Avatar src={profileImageUrl} alt="Profile Picture" />
-                                </IconButton>
-                            ) : (
-                                <IconButton color="inherit" component={Link} to="/profile">
-                                    <AccountCircleIcon />
-                                </IconButton>
-                            )
+                            <UsersMenu
+                                anchorEl={anchorEl}
+                                handleClose={handleClose}
+                                logout={logout}
+                                profileImageUrl={profileImageUrl}
+                                isLoading={isLoading}
+                                handleClick={handleClick} />
                         )}
 
 
