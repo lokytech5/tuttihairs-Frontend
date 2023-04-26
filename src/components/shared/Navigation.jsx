@@ -33,6 +33,8 @@ import Paper from '@mui/material/Paper';
 import CloseIcon from '@mui/icons-material/Close';
 import { alpha } from '@mui/material/styles';
 
+import useStore from '../../zustand/store';
+
 const BrandContainer = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -101,6 +103,9 @@ export default function Navigation() {
     const [searchDialogOpen, setSearchDialogOpen] = useState(false);
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const searchInputRef = useRef(null);
+    const isAuthenticated = useStore((state) => state.isAuthenticated);
+    const role = useStore((state) => state.role);
+    const logout = useStore((state) => state.logout);
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -167,21 +172,44 @@ export default function Navigation() {
             <ListItem button onClick={handleDrawerToggle} component={Link} to="/">
                 Home
             </ListItem>
-            <ListItem button onClick={handleDrawerToggle} component={Link} to="/login">
-                Login
-            </ListItem>
-            <ListItem button onClick={handleDrawerToggle} component={Link} to="/register">
-                Register
-            </ListItem>
+
+            {!isAuthenticated ? (
+                <>
+                    <ListItem button onClick={handleDrawerToggle} component={Link} to="/login">
+                        Login
+                    </ListItem>
+                    <ListItem button onClick={handleDrawerToggle} component={Link} to="/register">
+                        Register
+                    </ListItem>
+                </>
+            ) : (
+                <ListItem button onClick={handleDrawerToggle} component={Link}>
+                    Logout
+                </ListItem>
+            )}
+
             <ListItem button onClick={handleDrawerToggle} component={Link} to="/payment">
                 Payment
             </ListItem>
-            <ListItem button onClick={handleDrawerToggle} component={Link} to="/profile">
-                Profile  <AccountCircleIcon />
-            </ListItem>
+
+            {isAuthenticated && role === 'user' && (
+                <ListItem button onClick={handleDrawerToggle} component={Link} to="/profile">
+                    Profile  <AccountCircleIcon />
+                </ListItem>
+            )}
+
             <ListItem button onClick={handleDrawerToggle} component={Link} to="/cart">
                 Cart <ShoppingCartIcon />
             </ListItem>
+
+            {isAuthenticated && role === 'admin' && (
+                <ListItem button onClick={handleDrawerToggle} component={Link} to="/admin">
+                    Admin
+                </ListItem>
+            )}
+
+
+
         </List>
     );
 
@@ -244,24 +272,43 @@ export default function Navigation() {
                     </Hidden>
                     <Hidden smDown>
 
-                        <Button color="inherit" component={Link} to="/login">
-                            Login
-                        </Button>
-                        <Button color="inherit" component={Link} to="/register">
-                            Register
-                        </Button>
+                        {!isAuthenticated ? (
+                            <>
+                                <Button color="inherit" component={Link} to="/login">
+                                    Login
+                                </Button>
+                                <Button color="inherit" component={Link} to="/register">
+                                    Register
+                                </Button>
+                            </>
+                        ) : (
+                            <Button color="inherit" onClick={logout}>
+                                Logout
+                            </Button>
+                        )}
+
                         <Button color="inherit" component={Link} to="/payment">
                             Payment
                         </Button>
-                        {profileImageUrl ? (
-                            <IconButton component={Link} to="/profile">
-                                <Avatar src={profileImageUrl} alt="Profile Picture" />
-                            </IconButton>
-                        ) : (
-                            <IconButton color="inherit" component={Link} to="/profile">
-                                <AccountCircleIcon />
-                            </IconButton>
+                        {isAuthenticated && role === 'user' && (
+                            profileImageUrl ? (
+                                <IconButton component={Link} to="/profile">
+                                    <Avatar src={profileImageUrl} alt="Profile Picture" />
+                                </IconButton>
+                            ) : (
+                                <IconButton color="inherit" component={Link} to="/profile">
+                                    <AccountCircleIcon />
+                                </IconButton>
+                            )
                         )}
+
+
+                        {isAuthenticated && role === 'admin' && (
+                            <Button color="inherit" component={Link} to="/admin">
+                                Admin
+                            </Button>
+                        )}
+
                     </Hidden>
                     <IconButton color="inherit" component={Link} to="/cart">
                         <ShoppingCartIcon />

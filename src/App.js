@@ -5,6 +5,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PaymentPage from './pages/PaymentPage';
+import AdminPage from './pages/AdminPanelPage';
+import ProtectedRoute from './private/ProtectedRoute';
 
 function App() {
   return (
@@ -16,6 +18,9 @@ function App() {
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/payment' element={<PaymentPage />} />
+          <Route path="/admin" element={<ProtectedRoute requiredRole={["admin"]} />} >
+            <Route index element={<AdminPage />} />
+          </Route>
         </Routes>
       </Router>
 
