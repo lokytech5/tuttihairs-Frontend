@@ -1,4 +1,8 @@
 import React from 'react'
+import { Link as RouterLink } from "react-router-dom";
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Avatar,
   Button,
@@ -11,7 +15,6 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Link from '@mui/material/Link';
-import { useForm } from 'react-hook-form';
 import { styled } from "@mui/system";
 
 
@@ -52,7 +55,17 @@ const useStyles = styled((theme) => ({
   },
 }));
 
-export default function RegisterForm() {
+const RegisterButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(3, 0, 2),
+}));
+
+const formValidationSchema = ({
+  username: z.string().nonempty('Name is required'),
+  email: z.string().nonempty('Email is required'),
+  password: z.string().nonempty('Password is required'),
+})
+
+export default function RegisterForm(props) {
 
   const classes = useStyles();
   const theme = useTheme();
@@ -62,10 +75,18 @@ export default function RegisterForm() {
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm();
+  } = useForm({
+    resolver: zodResolver(formValidationSchema)
+  });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const handleFormSubmit = (data) => {
+    const registerData = {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    };
+
+    props.onAddRegister(registerData);
   };
 
   const password = watch('password', '');
@@ -95,16 +116,32 @@ export default function RegisterForm() {
         <Typography component="h1" variant="h5">
           Register
         </Typography>
-        <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
+        <form className={classes.form} noValidate onSubmit={handleSubmit(handleFormSubmit)}>
+
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            id="name"
-            label="Name"
-            name="name"
-            autoComplete="name"
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
+            autoFocus
+            {...register('username')}
+            error={errors.username ? true : false}
+            helperText={errors.username ? errors.username.message : ''}
+          />
+
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
             autoFocus
             {...register('email', {
               required: true,
@@ -123,10 +160,10 @@ export default function RegisterForm() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="password"
+            label="Password"
+            name="password"
+            autoComplete="password"
             {...register('password', {
               required: 'Password is required',
               minLength: {
@@ -144,10 +181,10 @@ export default function RegisterForm() {
             margin="normal"
             required
             fullWidth
-            name="password"
-            label="Password"
+            name="confirmPassword"
+            label="confirmPassword"
             type="password"
-            id="password"
+            id="confirmPassword"
             autoComplete="new-password"
             {...register('confirmPassword', {
               required: 'Confirm password is required',
@@ -159,19 +196,7 @@ export default function RegisterForm() {
               errors.confirmPassword ? errors.confirmPassword.message : ''
             }
           />
-
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            id="confirm-password"
-            autoComplete="new-password"
-          />
-          <Button
+          <RegisterButton
             type="submit"
             fullWidth
             variant="contained"
@@ -179,7 +204,7 @@ export default function RegisterForm() {
             className={classes.submit}
           >
             Register
-          </Button>
+          </RegisterButton>
         </form>
         <Typography component="div" className={classes.link}>
           Already have an account?{' '}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -95,7 +96,7 @@ export default function LoginForm(props) {
                             required
                             fullWidth
                             id="username"
-                            label="username"
+                            label="Username"
                             name="username"
                             autoComplete="username"
                             autoFocus
@@ -138,23 +139,24 @@ export default function LoginForm(props) {
                             helperText={errors.password ? errors.password.message : ''}
                         />
 
-                        <Button
+                        <LoginButton
                             type="submit"
                             fullWidth
                             variant="contained"
                             color="primary"
                         >
                             Login
-                        </Button>
-                        <Link
-                            component="button"
-                            variant="body2"
-                            onClick={() => {
-                                console.info("I'm a button.");
-                            }}
-                        >
-                            Forgot password?
-                        </Link>
+                        </LoginButton>
+                        <RouterLink to="/forgot-password" style={{ textDecoration: 'none' }}>
+                            <Link
+                                href="/forgot-password"
+                                component="button"
+                                variant="body2"
+                            >
+
+                                Forgot password?
+                            </Link>
+                        </RouterLink>
                     </FormContainer>
                 </form>
                 <SignUpLink component="div">
