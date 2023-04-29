@@ -34,7 +34,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import { alpha } from '@mui/material/styles';
 
 import useStore from '../../zustand/store';
+import useUserStore from '../../zustand/userStore'
 import UsersMenu from '../users/UsersMenu';
+import axios from 'axios'
 
 const BrandContainer = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -99,14 +101,18 @@ export default function Navigation() {
     const [anchorEl, setAnchorEl] = useState(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchDialogOpen, setSearchDialogOpen] = useState(false);
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [avatarUrl, setAvatarUrl] = useState(null);
     const searchInputRef = useRef(null);
     const isAuthenticated = useStore((state) => state.isAuthenticated);
+    const userData = useUserStore((state) => state.userData);
+    const isLoading = useUserStore((state) => state.isLoading);
+    const setUserData = useUserStore((state) => state.setUserData);
+    const setIsLoading = useUserStore((state) => state.setIsLoading);
     const role = useStore((state) => state.role);
+    const token = useStore((state) => state.token);
     const logout = useStore((state) => state.logout);
 
     const handleClose = () => {
@@ -146,17 +152,33 @@ export default function Navigation() {
         setSearchDialogOpen(false);
     };
 
-    // Profile image URL from the backend
+    //*Fetch user Profile and pass to menu
     useEffect(() => {
-        // Replace this with the actual function to fetch the profile image URL from the backend
-        const fetchProfileImage = async () => {
-            // ...fetch profile image URL and update the state
-            setProfileImageUrl(null);
-            setIsLoading(false);
-        };
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/users/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
 
-        fetchProfileImage();
-    }, []);
+                setUserData(response.data.user);
+                console.log("Fetched user data:", response.data);
+                setIsLoading(false);
+                // Store the avatar URL in the local state using the correct field name
+                setAvatarUrl(response.data.user.avatar);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            } finally {
+
+                setIsLoading(false);
+            }
+        };
+        if (isAuthenticated) {
+            fetchUserData();
+
+        }
+    }, [isAuthenticated]);
 
     // Simulate data fetching for the search bar
     useEffect(() => {
@@ -292,12 +314,14 @@ export default function Navigation() {
 
                         {isAuthenticated && role === 'user' && (
                             <UsersMenu
+                                key={avatarUrl}
                                 anchorEl={anchorEl}
                                 handleClose={handleClose}
                                 logout={logout}
-                                profileImageUrl={profileImageUrl}
                                 isLoading={isLoading}
-                                handleClick={handleClick} />
+                                handleClick={handleClick}
+                                userData={userData}
+                                profileImageUrl={avatarUrl} />
                         )}
 
 

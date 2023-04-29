@@ -32,8 +32,9 @@ export default function LoginPage() {
                 const userId = response.data.userId;
                 const decodedToken = jwt_decode(token);
                 console.log('Decoded Token:', decodedToken);
+                const avatar = response.data.avatar;
 
-                setAuthenticated(true);
+                setAuthenticated(true, avatar);
                 loadUser(token);
 
                 setTimeout(() => {

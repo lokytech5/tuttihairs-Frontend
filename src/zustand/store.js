@@ -7,8 +7,9 @@ const useStore = create((set, get) => ({
     role: null, // 'user' or 'admin'
     token: null,
     username: null,
+    avatarUrl: null,
 
-    setAuthenticated: (isAuth) => set({ isAuthenticated: isAuth }),
+    setAuthenticated: (isAuth, avatarUrl) => set({ isAuthenticated: isAuth, avatarUrl: avatarUrl }),
 
     login: (id, role, token, username) => set({
         isAuthenticated: true,
@@ -26,10 +27,12 @@ const useStore = create((set, get) => ({
         username: null,
     }),
 
+    setAvatarURL: (url) => set({ avatarUrl: url }),
+
     loadUser: (token) => {
         try {
             const decodedToken = jwt_decode(token);
-            const { id, isAdmin, username } = decodedToken;
+            const { id, isAdmin, username, avatar } = decodedToken;
 
             const userRole = isAdmin ? 'admin' : 'user';
 
@@ -38,6 +41,7 @@ const useStore = create((set, get) => ({
                 role: userRole,
                 token,
                 username,
+                avatarUrl: avatar,
             });
         } catch (err) {
             console.error('Error loading user from token:', err);
