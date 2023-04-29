@@ -36,10 +36,10 @@ export default function UsersMenu({ anchorEl, handleClose, handleClick, logout, 
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleClose} component={Link} to="/profile">
+                <MenuItem onClick={handleClose} component={Link} to="/user-profile">
                     Profile
                 </MenuItem>
-                <MenuItem onClick={handleClose} component={Link} to="/settings">
+                <MenuItem onClick={handleClose} component={Link} to="/user-setting">
                     Settings
                 </MenuItem>
                 <MenuItem onClick={logout}>Logout</MenuItem>

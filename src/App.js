@@ -10,10 +10,11 @@ import PaymentPage from './pages/payment/PaymentPage';
 import AdminPage from './pages/admin/AdminPanelPage';
 import ProtectedRoute from './private/ProtectedRoute';
 
-import ProfilePage from './pages/users/UserProfilePage';
+import UserProfilePage from './pages/users/UserProfilePage';
+import UserSettingPage from './pages/users/UserSettingPage';
 
 function App() {
-  
+
   return (
     <>
       <Router>
@@ -26,7 +27,8 @@ function App() {
           <Route path='/reset-password' element={<ResetPasswordPage />} />
           <Route path='/payment' element={<PaymentPage />} />
 
-          <Route path='/profile' element={<ProfilePage />} />
+          <Route path='/user-profile' element={<UserProfilePage />} />
+          <Route path='/user-setting' element={<UserSettingPage />} />
 
 
           <Route path="/admin" element={<ProtectedRoute requiredRole={["admin"]} />} >
