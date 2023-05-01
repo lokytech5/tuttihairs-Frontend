@@ -14,10 +14,13 @@ export default function LoginPage() {
     const [errorAlertMessage, setErrorAlertMessage] = useState('');
     const navigate = useNavigate();
     const setAuthenticated = useStore((state) => state.setAuthenticated);
+    const setUsername = useStore((state) => state.setUsername);
     const loadUser = useStore((state) => state.loadUser);
 
 
     const addLoginHandler = async (loginData) => {
+        console.log("logindata username", loginData.username);
+
         setSuccessAlert(false);
         setErrorAlert(false);
         setIsLoading(true);
@@ -25,17 +28,23 @@ export default function LoginPage() {
             const response = await authRequest(loginData.username, loginData.password);
 
             if (response.status === 200 || response.status === 201) {
+
                 setFormData(loginData);
                 setSuccessAlert(true);
-
+                const username = loginData.username
                 const token = response.data.token;
-                const userId = response.data.userId;
                 const decodedToken = jwt_decode(token);
+                const userId = decodedToken._id;
                 console.log('Decoded Token:', decodedToken);
                 const avatar = response.data.avatar;
 
                 setAuthenticated(true, avatar);
+                useStore.getState().setUserId(userId);
+                setUsername(username);
+                console.log("Username set in store:", useStore.getState().username);
                 loadUser(token);
+
+
 
                 setTimeout(() => {
                     navigate('/');

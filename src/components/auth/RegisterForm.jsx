@@ -49,23 +49,41 @@ const formValidationSchema = z.object({
   username: z.string().nonempty('Name is required'),
   email: z.string().nonempty('Email is required'),
   password: z.string().nonempty('Password is required'),
+  confirmPassword: z.string().nonempty('Confirmed Password is required')
 })
 
 export default function RegisterForm(props) {
-
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
   const {
     register,
     handleSubmit,
+    getValues, setError,
     formState: { errors },
     watch,
   } = useForm({
     resolver: zodResolver(formValidationSchema)
   });
 
+
+  //*Validating Password
+  const validatePassword = () => {
+    if (getValues('password') !== getValues('confirmPassword')) {
+      setError('confirmPassword', {
+        type: 'manual',
+        message: 'Passwords do not match',
+      });
+      return false;
+    }
+    return true;
+  };
+
+
+
   const handleFormSubmit = (data) => {
+    if (!validatePassword()) {
+      return;
+    }
     const registerData = {
       username: data.username,
       email: data.email,
