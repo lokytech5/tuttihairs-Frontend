@@ -13,7 +13,7 @@ const useCategoryProducts = (categoryId) => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/products/category/${categoryId}`);
                 setProducts(response.data);
-                console.log("Fetched products:", response.data);
+                // console.log("Fetched products:", response.data);
                 setLoading(false);
             } catch (err) {
                 setError(err);
@@ -26,7 +26,25 @@ const useCategoryProducts = (categoryId) => {
         }
     }, [categoryId]);
 
-    return { products, loading, error };
+    const updateProductStock = async (productId, newStock) => {
+        try {
+            await axios.put(`http://localhost:5000/api/products/${productId}`, {
+                stock: newStock,
+            });
+            const updatedProducts = products.map((product) => {
+                if (product._id === productId) {
+                    return { ...product, stock: newStock };
+                }
+                return product;
+            });
+            setProducts(updatedProducts);
+        } catch (error) {
+            setError(error);
+        }
+
+    }
+
+    return { products, loading, error, updateProductStock };
 };
 
 export default useCategoryProducts;

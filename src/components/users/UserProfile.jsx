@@ -7,8 +7,6 @@ import {
     Typography,
     TextField,
     Button,
-    Grid,
-    Box,
     Paper,
     Avatar,
 } from '@mui/material';
@@ -39,10 +37,6 @@ const UserProfileAvatar = styled(Avatar)(({ theme }) => ({
     height: theme.spacing(10),
     marginBottom: theme.spacing(1),
 }));
-
-const Input = styled('input')({
-    display: 'none',
-});
 
 // const UserProfilePaper = styled(Paper)(({ theme }) => ({
 //     padding: theme.spacing(2),

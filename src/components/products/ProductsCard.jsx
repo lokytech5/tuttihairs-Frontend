@@ -14,11 +14,22 @@ import {
 import { useNavigate } from 'react-router-dom';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import useStore from '../../zustand/store';
 
-export default function ProductsCard({ product }) {
+export default function ProductsCard({ product, updateProductStock }) {
     const addToCart = useStore((state) => state.addToCart);
+    const userId = useStore((state) => state.userId);
     const navigate = useNavigate();
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
 
     const handleViewProduct = (productId) => {
         navigate(`/product/${productId}`);
@@ -26,8 +37,12 @@ export default function ProductsCard({ product }) {
 
     const handleAddToCart = (productId) => {
         // Add the product to the cart
-        addToCart(product);
+        addToCart(product, userId, productId);
+        setSnackbarOpen(true);
+        const newStock = product.stock - 1;
+        updateProductStock(productId, newStock);
     };
+
 
     return (
         <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -66,17 +81,34 @@ export default function ProductsCard({ product }) {
                     >
                         View Details
                     </Button>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        startIcon={<ShoppingCartIcon />}
-                        onClick={() => handleAddToCart(product._id)}
-                        disabled={product.stock <= 0}
-                    >
-                        Add to Cart
-                    </Button>
+                    {product.stock > 0 ? (
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            startIcon={<ShoppingCartIcon />}
+                            onClick={() => handleAddToCart(product._id)}
+                            disabled={product.stock <= 0}
+                        >
+                            Add to Cart
+                        </Button>
+                    ) : (
+                        <Button variant="outlined" color="error" disabled>
+                            Out of Stock
+                        </Button>
+                    )}
                 </CardActions>
             </Card>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <MuiAlert onClose={handleCloseSnackbar} severity="success" elevation={6} variant="filled">
+                    {product.name} added to cart!
+                </MuiAlert>
+            </Snackbar>
         </Grid>
     );
 }

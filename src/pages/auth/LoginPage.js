@@ -16,6 +16,10 @@ export default function LoginPage() {
     const setAuthenticated = useStore((state) => state.setAuthenticated);
     const setUsername = useStore((state) => state.setUsername);
     const loadUser = useStore((state) => state.loadUser);
+    const syncLocalStorageCart = useStore((state) => state.syncLocalStorageCart);
+    const fetchCartSummary = useStore((state) => state.fetchCartSummary);
+    const fetchCartItems = useStore((state) => state.fetchCartItems); 
+
 
 
     const addLoginHandler = async (loginData) => {
@@ -43,13 +47,12 @@ export default function LoginPage() {
                 setUsername(username);
                 console.log("Username set in store:", useStore.getState().username);
                 loadUser(token);
-
-
-
+                
                 setTimeout(() => {
                     navigate('/');
                 }, 2000); // Wait for 2 seconds before navigating
-
+                
+                syncLocalStorageCart();
             }
         } catch (error) {
             console.log('Error:', error);
@@ -65,8 +68,7 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     }
-
-
+    
     return (
         <>
             {successAlert && (

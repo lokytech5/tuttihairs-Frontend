@@ -14,7 +14,7 @@ export default function UserProfilePage() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { userData } = useStore((state) => ({ userData: state.userData }));
   React.useEffect(() => {
-    console.log('userData:', userData);
+    // console.log('userData:', userData);
   }, [userData]);
 
   const handleSnackbarClose = (event, reason) => {
@@ -34,7 +34,7 @@ export default function UserProfilePage() {
           'Authorization': `Bearer ${token}`
         }
       })
-      console.log('addupdateHandler token', token);
+      // console.log('addupdateHandler token', token);
       if (response.status === 200 || response.status === 201) {
         setFormData(updateData);
         setSnackbarOpen(true);
@@ -48,7 +48,7 @@ export default function UserProfilePage() {
   const addUploadAvatar = async (avatarFile) => {
 
     try {
-      console.log('Sending avatar file:', avatarFile);
+      // console.log('Sending avatar file:', avatarFile);
       const formData = new FormData();
       formData.append('avatar', avatarFile);
       const response = await axios.post(`http://localhost:5000/api/users/upload-avatar`, formData, {
@@ -70,8 +70,6 @@ export default function UserProfilePage() {
       console.log('Error:', error);
     }
   }
-
-  console.log('Current userData:', userData);
 
   return (
     <>

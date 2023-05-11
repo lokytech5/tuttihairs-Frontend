@@ -10,18 +10,13 @@ import {
     Badge,
     AppBar,
     Button,
-
     Toolbar,
-
     IconButton,
-
     Typography,
-
     TextField,
     Dialog,
     DialogContent,
 } from "@mui/material";
-import AdbIcon from '@mui/icons-material/Adb';
 import { styled } from '@mui/system';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -32,11 +27,14 @@ import InputBase from '@mui/material/InputBase';
 import Paper from '@mui/material/Paper';
 import CloseIcon from '@mui/icons-material/Close';
 import { alpha } from '@mui/material/styles';
+import Divider from '@mui/material/Divider';
 
 import useStore from '../../zustand/store';
 import useUserStore from '../../zustand/userStore'
 import UsersMenu from '../users/UsersMenu';
 import axios from 'axios'
+
+import ShoppingCart from '../cart/ShoppingCart';
 
 const BrandContainer = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -94,7 +92,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const drawerWidth = 240;
+const drawerWidth = 300;
 
 export default function Navigation() {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -114,8 +112,11 @@ export default function Navigation() {
     const role = useStore((state) => state.role);
     const token = useStore((state) => state.token);
     const logout = useStore((state) => state.logout);
-    const cartItems = useStore((state) => state.cart);
-    const cartItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+    const cartItems = useStore((state) => state.cartItems);
+    const cartItemCount = Array.isArray(cartItems)
+        ? cartItems.reduce((total, item) => total + item.quantity, 0)
+        : 0;
+    const [cartDrawerOpen, setCartDrawerOpen] = React.useState(false);
 
 
     const handleClose = () => {
@@ -128,6 +129,14 @@ export default function Navigation() {
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
+    };
+
+    const handleCartIconClick = () => {
+        setCartDrawerOpen(true);
+    };
+
+    const handleCloseCartDrawer = () => {
+        setCartDrawerOpen(false);
     };
 
     const handleSearchIconClick = () => {
@@ -154,6 +163,8 @@ export default function Navigation() {
     const handleSearchDialogClose = () => {
         setSearchDialogOpen(false);
     };
+
+  
 
     //*Fetch user Profile and pass to menu
     useEffect(() => {
@@ -195,6 +206,17 @@ export default function Navigation() {
         }
     }, [searchQuery]);
 
+    const CartDrawerHeader = () => {
+        return (
+            <div style={{ padding: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                
+                <IconButton onClick={handleCloseCartDrawer}>
+                    <CloseIcon />
+                </IconButton>
+            </div>
+        );
+    };
+
     const drawerList = (
         <List>
             <ListItem button onClick={handleDrawerToggle} component={Link} to="/">
@@ -226,8 +248,8 @@ export default function Navigation() {
                 </ListItem>
             )}
 
-            <ListItem button onClick={handleDrawerToggle} component={Link} to="/cart">
-                <Badge badgeContent={cartItemCount} color="error">
+            <ListItem button onClick={() => { handleDrawerToggle(); handleCartIconClick(); }}>
+                <Badge badgeContent={cartItemCount} color="error" key={cartItemCount}>
                     <ShoppingCartIcon />
                 </Badge>
             </ListItem>
@@ -246,7 +268,7 @@ export default function Navigation() {
 
     return (
         <>
-            <AppBar position="static">
+            <AppBar position="static" sx={{ zIndex: theme => theme.zIndex.drawer + 1 }}>
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
                     <IconButton
                         edge="start"
@@ -284,24 +306,25 @@ export default function Navigation() {
                         </BrandContainer>
 
                     </Hidden>
-                    <Hidden smDown>
-                        <Search isSearchExpanded={isSearchExpanded}>
-                            <SearchIconWrapper
-                                isSearchExpanded={isSearchExpanded}
-                                onClick={handleSearchIconClick}>
-
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                ref={searchInputRef}
-                                placeholder="Search…"
-                                inputProps={{ 'aria-label': 'search' }}
-                                onChange={handleSearch}
-                            />
-                        </Search>
-                    </Hidden>
+                    
                     <Hidden mdUp>
                         <IconButton color="inherit" onClick={handleSearchDialogOpen}>
+                            <Hidden smDown>
+                                <Search isSearchExpanded={isSearchExpanded}>
+                                    <SearchIconWrapper
+                                        isSearchExpanded={isSearchExpanded}
+                                        onClick={handleSearchIconClick}>
+
+                                        <SearchIcon />
+                                    </SearchIconWrapper>
+                                    <StyledInputBase
+                                        ref={searchInputRef}
+                                        placeholder="Search…"
+                                        inputProps={{ 'aria-label': 'search' }}
+                                        onChange={handleSearch}
+                                    />
+                                </Search>
+                            </Hidden>
                             <SearchIcon />
                         </IconButton>
 
@@ -343,7 +366,7 @@ export default function Navigation() {
                         )}
 
                     </Hidden>
-                    <IconButton color="inherit" component={Link} to="/cart">
+                    <IconButton color="inherit" onClick={handleCartIconClick}>
                         <Badge badgeContent={cartItemCount} color="error">
                             <ShoppingCartIcon />
                         </Badge>
@@ -368,7 +391,7 @@ export default function Navigation() {
 
             <Dialog
                 open={searchDialogOpen}
-                onClose={handleSearchDialogClose}
+                // onClose={handleSearchDialogClose}
                 fullWidth
             >
                 <DialogContent>
@@ -402,6 +425,29 @@ export default function Navigation() {
                     </Paper>
                 </DialogContent>
             </Dialog>
+
+            <Drawer
+                anchor="right"
+                open={cartDrawerOpen}
+                onClose={handleCloseCartDrawer}
+                sx={{
+                    zIndex: theme => theme.zIndex.appBar - 1,
+                    width: drawerWidth,
+                    flexShrink: 0,
+                    top: '64px', // Adjust the top position of the cart Drawer
+                    '& .MuiDrawer-paper': {
+                        width: drawerWidth,
+                        marginTop: '64px', // Add a margin to the top of the cart Drawer content
+                    },
+                }}
+
+                ModalProps={{ BackdropProps: { style: { backgroundColor: 'transparent' } } }}
+            >
+                <CartDrawerHeader />
+                <Divider />
+                <ShoppingCart onClose={handleCloseCartDrawer} />
+                {/* Add a cart summary, continue shopping button, and checkout button here */}
+            </Drawer>
         </>
     );
 };
