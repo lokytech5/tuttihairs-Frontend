@@ -4,39 +4,28 @@ import {
     Container,
     Grid,
     Typography,
-    IconButton,
     Paper,
-    Card,
-    CardActionArea,
-    CardContent,
-    CardActions,
-    CardMedia,
     Button,
+    CircularProgress,
 } from '@mui/material';
-import { styled } from '@mui/system';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+
 import Pagination from '@mui/material/Pagination';
 import { useTheme } from '@mui/material/styles';
-
-
-import { categories } from './Categories'
+import useCategories from '../../hooks/useCategories';
+import useCuratedCollection from '../../hooks/useCuratedCollection';
+import Categories from './Categories'
 import PromoSection from './PromoSection'
 import FeaturedSwiper from './FeaturedSwiper';
-
-const CustomGrid = styled(Grid)(({ theme }) => ({
-    [theme.breakpoints.down('md')]: {
-        marginBottom: theme.spacing(2),
-    },
-}));
+import CuratedCollection from './CuratedCollection';
 
 export default function Home() {
     const theme = useTheme();
     const [page, setPage] = React.useState(1);
-    const totalPages = 5;
+    const { categories, loading: categoriesLoading, error: categoriesError, totalPages } = useCategories(page);
+    const { curatedCollection, loading: collectionsLoading, error: collectionsError } = useCuratedCollection();
 
     const handlePageChange = (event, value) => {
         setPage(value);
-        // Fetch new data based on the selected page
     };
 
     return (
@@ -44,11 +33,47 @@ export default function Home() {
             <Box>
                 <Container maxWidth="lg">
                     <Box my={4}>
-                        <Paper sx={{ py: 2 }}>
+                        <Paper sx={{
+                            py: 2,
+                            backgroundImage: 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)', // Apply a gradient background
+                        }}>
                             <Box p={2}>
-                                <Typography variant="h2" align="center">
-                                    Welcome to Our E-commerce Store
+                                <Typography
+                                    variant="h2"
+                                    align="center"
+                                    style={{
+                                        fontFamily: 'Roboto', // Set the custom font
+                                        fontWeight: 500,
+                                        fontSize: 'bold',
+                                        color: '#fff', // Change text color to white
+                                    }}
+                                >
+                                    Welcome to Tuti Hairs
                                 </Typography>
+                                <Typography
+                                    variant="h5"
+                                    align="center"
+                                    style={{
+                                        fontFamily: 'Roboto',
+                                        fontWeight: 300,
+                                        color: '#fff',
+                                        marginTop: '1rem',
+                                    }}
+                                >
+                                    Discover the Best Products at Unbeatable Prices
+                                </Typography>
+                                <Box display="flex" justifyContent="center" mt={2}>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        size="large"
+                                        onClick={() => {
+                                            // Handle the call-to-action button click here
+                                        }}
+                                    >
+                                        Start Shopping
+                                    </Button>
+                                </Box>
                             </Box>
                             <Box my={4}>
                                 <FeaturedSwiper />
@@ -60,59 +85,75 @@ export default function Home() {
                         </Box>
                     </Box>
 
-                    <Grid container spacing={2}>
-                        {categories.map((category) => (
-                            <CustomGrid item xs={12} sm={6} md={4} lg={3} key={category.id}>
-                                <Card>
-                                    <CardActionArea>
-                                        <CardMedia
-                                            component="img"
-                                            height="200"
-                                            image={category.image}
-                                            alt={category.name}
-                                        />
-                                        <CardContent>
-                                            <Typography gutterBottom variant="h5" component="div">
-                                                {category.name}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {category.description}
-                                            </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                    <CardActions>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            startIcon={<AddShoppingCartIcon />}
-                                            onClick={() => {
-                                                // Handle the add to cart action here
-                                            }}
-                                        >
-                                            Add to Cart
-                                        </Button>
-                                    </CardActions>
-                                </Card>
-                            </CustomGrid>
-                        ))}
-                    </Grid>
+                    {/* Add curated collections here */}
                     <Box my={4}>
-                        <Pagination
-                            count={totalPages}
-                            page={page}
-                            onChange={handlePageChange}
-                            color="primary"
-                            size="large"
-                            shape="rounded"
-                            showFirstButton
-                            showLastButton
-                            sx={{
-                                ...theme.components.MuiPagination,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
+                        <Typography
+                            variant="h4"
+                            align="center"
+                            style={{
+                                fontFamily: 'Roboto',
+                                fontWeight: 500,
+                                marginBottom: theme.spacing(2),
                             }}
-                        />
+                        >
+                            Curated Collections
+                        </Typography>
+
+                        {collectionsLoading ? (
+                            <Box display="flex" justifyContent="center" alignItems="center">
+                                <CircularProgress />
+                            </Box>
+                        ) : collectionsError ? (
+                            <Typography variant="body2" align="center" color="text.secondary">
+                                {collectionsError}
+                            </Typography>
+                            ) : curatedCollection ? (
+                            <Grid container spacing={2}>
+                                {curatedCollection.map((collection) => (
+                                    <CuratedCollection key={collection._id} collection={collection} />
+                                ))}
+                            </Grid>
+                        ) : null}
+
+
+                    </Box>
+
+                    <Box my={4}>
+                        <Typography
+                            variant="h4"
+                            align="center"
+                            style={{
+                                fontFamily: 'Roboto',
+                                fontWeight: 500,
+                                marginBottom: theme.spacing(2),
+                            }}
+                        >
+                            Browse Our Categories
+                        </Typography>
+
+                        <Grid container spacing={2}>
+
+                            <Categories categories={categories} page={page} />
+
+                        </Grid>
+                        <Box my={4}>
+                            <Pagination
+                                count={totalPages}
+                                page={page}
+                                onChange={handlePageChange}
+                                color="primary"
+                                size="large"
+                                shape="rounded"
+                                showFirstButton
+                                showLastButton
+                                sx={{
+                                    ...theme.components.MuiPagination,
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            />
+                        </Box>
                     </Box>
                 </Container>
 

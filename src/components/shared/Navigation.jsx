@@ -7,16 +7,16 @@ import {
     Drawer,
     ListItem,
     List,
+    Badge,
     AppBar,
     Button,
-    Container,
+
     Toolbar,
-    Tooltip,
+
     IconButton,
-    Box,
+
     Typography,
-    Menu,
-    MenuItem,
+
     TextField,
     Dialog,
     DialogContent,
@@ -114,6 +114,9 @@ export default function Navigation() {
     const role = useStore((state) => state.role);
     const token = useStore((state) => state.token);
     const logout = useStore((state) => state.logout);
+    const cartItems = useStore((state) => state.cart);
+    const cartItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -224,7 +227,9 @@ export default function Navigation() {
             )}
 
             <ListItem button onClick={handleDrawerToggle} component={Link} to="/cart">
-                Cart <ShoppingCartIcon />
+                <Badge badgeContent={cartItemCount} color="error">
+                    <ShoppingCartIcon />
+                </Badge>
             </ListItem>
 
             {isAuthenticated && role === 'admin' && (
@@ -257,8 +262,11 @@ export default function Navigation() {
                             <Avatar alt="Brand Logo" sx={{ marginRight: theme.spacing(1) }}>
                                 Logo
                             </Avatar>
-                            <Typography variant="h6" component="div">
-                                My App
+                            <Typography variant="h6" component="div" style={{
+                                fontFamily: 'Roboto', // Set the custom font
+                                fontWeight: 300,
+                            }}>
+                                Tuti Hairs
                             </Typography>
                         </BrandContainerCentered>
                     </Hidden>
@@ -267,8 +275,11 @@ export default function Navigation() {
                             <Avatar alt="Brand Logo" sx={{ marginRight: theme.spacing(1) }}>
                                 Logo
                             </Avatar>
-                            <Typography variant="h6" component="div">
-                                My App
+                            <Typography variant="h6" component="div" style={{
+                                fontFamily: 'Roboto', // Set the custom font
+                                fontWeight: 300,
+                            }}>
+                                Tuti Hairs
                             </Typography>
                         </BrandContainer>
 
@@ -333,7 +344,9 @@ export default function Navigation() {
 
                     </Hidden>
                     <IconButton color="inherit" component={Link} to="/cart">
-                        <ShoppingCartIcon />
+                        <Badge badgeContent={cartItemCount} color="error">
+                            <ShoppingCartIcon />
+                        </Badge>
                     </IconButton>
                 </Toolbar>
             </AppBar>

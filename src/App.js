@@ -6,12 +6,16 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
+
 import PaymentPage from './pages/payment/PaymentPage';
+
 import AdminPage from './pages/admin/AdminPanelPage';
 import ProtectedRoute from './private/ProtectedRoute';
 
 import UserProfilePage from './pages/users/UserProfilePage';
 import UserSettingPage from './pages/users/UserSettingPage';
+
+import CategoryProducts from './components/products/CategoryProducts';
 
 function App() {
 
@@ -29,6 +33,8 @@ function App() {
 
           <Route path='/user-profile' element={<UserProfilePage />} />
           <Route path='/user-setting' element={<UserSettingPage />} />
+
+          <Route path='/categories/:categoryId' element={<CategoryProducts />} />
 
 
           <Route path="/admin" element={<ProtectedRoute requiredRole={["admin"]} />} >

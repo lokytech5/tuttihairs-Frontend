@@ -51,6 +51,25 @@ const useStore = create((set, get) => ({
             console.error('Error loading user from token:', err);
         }
     },
+
+    cart: [],
+    addToCart: (product) => {
+        const existingCartItem = get().cart.find((item) => item._id === product._id);
+
+        if (existingCartItem) {
+            set((state) => ({
+                cart: state.cart.map((item) =>
+                    item._id === product._id
+                        ? { ...existingCartItem, quantity: existingCartItem.quantity + 1 }
+                        : item
+                ),
+            }));
+        } else {
+            set((state) => ({
+                cart: [...state.cart, { ...product, quantity: 1 }],
+            }));
+        }
+    },
 }));
 
 

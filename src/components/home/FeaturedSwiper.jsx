@@ -67,7 +67,7 @@ export default function FeaturedSwiper() {
                     </SwiperSlide>
                 ))}
             </Swiper>
-            <style jsx>
+            <style>
                 {`
           .custom-pagination-bullet {
             background-color: white;
