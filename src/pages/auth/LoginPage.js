@@ -48,11 +48,13 @@ export default function LoginPage() {
                 console.log("Username set in store:", useStore.getState().username);
                 loadUser(token);
                 
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000); // Wait for 2 seconds before navigating
-                
-                syncLocalStorageCart();
+                syncLocalStorageCart().then(() => {
+                    setTimeout(() => {
+                        navigate('/');
+                    }, 2000); // Wait for 2 seconds before navigating
+                }).catch((error) => {
+                    console.error('Error syncing cart:', error);
+                });
             }
         } catch (error) {
             console.log('Error:', error);

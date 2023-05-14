@@ -1,7 +1,7 @@
 import React from 'react'
 import useCategoryProducts from '../../hooks/useCategoryProducts'
-import ProductsCard from './ProductsCard'
-import { Grid, Box } from '@mui/material';
+import ProductsCard from '../products/ProductsCard'
+import { Grid, Box, CircularProgress } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 export default function CategoryProducts() {
@@ -10,7 +10,7 @@ export default function CategoryProducts() {
     const { products, loading, error, updateProductStock } = useCategoryProducts(categoryId);
     // console.log("CategoryProducts products:", products);
     if (loading) {
-        return <div>Loading...</div>;
+        return <CircularProgress />
     }
 
     if (error) {
@@ -24,8 +24,8 @@ export default function CategoryProducts() {
                 <Grid container spacing={3}>
                     {products.map((product) => (
                         <ProductsCard key={product._id}
-                         product={product}
-                         updateProductStock={updateProductStock} />
+                            product={product}
+                            updateProductStock={updateProductStock} />
                     ))}
                 </Grid>
             </Grid>

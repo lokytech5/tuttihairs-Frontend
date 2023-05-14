@@ -15,7 +15,10 @@ import ProtectedRoute from './private/ProtectedRoute';
 import UserProfilePage from './pages/users/UserProfilePage';
 import UserSettingPage from './pages/users/UserSettingPage';
 
-import CategoryProducts from './components/products/CategoryProducts';
+import CategoryProducts from './components/category/CategoryProducts';
+import CategoryDetails from './components/category/CategoryDetails';
+import Product from './components/products/Product';
+import ProductView from './components/products/ProductView';
 
 function App() {
 
@@ -35,6 +38,9 @@ function App() {
           <Route path='/user-setting' element={<UserSettingPage />} />
 
           <Route path='/categories/:categoryId' element={<CategoryProducts />} />
+          <Route path='/product/:productId' element={<CategoryDetails />} />
+          <Route path='/product-list' element={<Product />} />
+          <Route path='/productView/:productId' element={<ProductView/>} />
 
 
           <Route path="/admin" element={<ProtectedRoute requiredRole={["admin"]} />} >

@@ -50,7 +50,7 @@ export default function ShoppingCart() {
       ) : (
         <List>
           {cartItems.map((item, index) => (
-            <React.Fragment key={item._id}>
+            <React.Fragment key={item._id || index}>
               {console.log("Item:", item)}
               <ListItem>
                 <ListItemAvatar>

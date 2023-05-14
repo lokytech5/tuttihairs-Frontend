@@ -7,11 +7,12 @@ import axios from 'axios';
 const removeFromLocalStorage = (productId) => {
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
     console.log('Before removal:', cartItems);
-    const updatedCartItems = cartItems.filter((item) => item.product_id !== productId);
+    const updatedCartItems = cartItems.filter((item) => item._id !== productId);
     console.log('After removal:', updatedCartItems);
     localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     return updatedCartItems;
 };
+
 
 
 
@@ -36,7 +37,8 @@ const useStore = create((set, get) => ({
             token,
             username,
         })
-        return get().syncLocalStorageCart();
+        // Sync local storage cart with the user's cart in the database
+        await get().syncLocalStorageCart();
     },
 
     logout: () => set({
@@ -69,7 +71,7 @@ const useStore = create((set, get) => ({
         }
     },
 
-   
+
 
     cartItems: [],
     cartSummary: { totalPrice: 0, totalItems: 0 },
@@ -77,16 +79,6 @@ const useStore = create((set, get) => ({
         const isAuthenticated = get().isAuthenticated;
         const userId = get().userId;
         const token = get().token;
-
-        // Ensure product object has _id property
-    // const normalizedProduct = {
-    //     _id: product._id || product.product_id,
-    //     id: product.id || product.product_id,
-    //     name: product.name || product.product_name,
-    //     description: product.description,
-    //     price: product.price,
-    //     image: product.image,
-    // };
 
         // Safeguard check to make sure cartItems is always an array
         if (!Array.isArray(get().cartItems)) {
@@ -181,7 +173,7 @@ const useStore = create((set, get) => ({
             } catch (error) {
                 console.error('Failed to fetch cart items:', error);
                 // Check if the error is a 404 error
-                if (error.response && error.response.status === 404) {
+                if (error.response && error.response.status !== 404) {
                     set({ cartItems: [] }); // Set cartItems to an empty array
                 }
 
@@ -195,39 +187,42 @@ const useStore = create((set, get) => ({
         console.log('Fetched cart summary:', get().cartSummary);
     },
 
-    syncLocalStorageCart: async () => {
-        const localStorageCart = JSON.parse(localStorage.getItem('cartItems')) || [];
-        const currentCartItems = get().cartItems;
+    syncLocalStorageCart: () => new Promise(async (resolve, reject) => {
+        try {
+            const localStorageCart = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const currentCartItems = get().cartItems;
 
-        // Merge localStorageCart and currentCartItems
-        const mergedCart = [...localStorageCart, ...currentCartItems].reduce((acc, item) => {
-            const existingItemIndex = acc.findIndex((cartItem) => cartItem._id === item._id);
-            if (existingItemIndex !== -1) {
-                acc[existingItemIndex].quantity += item.quantity;
-            } else {
-                acc.push(item);
-            }
-            return acc;
-        }, []);
+            // Merge localStorageCart and currentCartItems
+            const mergedCart = [...localStorageCart, ...currentCartItems].reduce((acc, item) => {
+                const existingItemIndex = acc.findIndex((cartItem) => cartItem._id === item._id);
+                if (existingItemIndex !== -1) {
+                    acc[existingItemIndex].quantity += item.quantity;
+                } else {
+                    acc.push(item);
+                }
+                return acc;
+            }, []);
 
-        set({ cartItems: mergedCart });
-        localStorage.removeItem('cartItems');
-        // Update the cart items on the server
-        if (get().isAuthenticated) {
-            try {
+            set({ cartItems: mergedCart });
+            localStorage.removeItem('cartItems');
+            // Update the cart items on the server
+            if (get().isAuthenticated) {
                 console.log('Merged cart:', mergedCart);
                 await axios.post('http://localhost:5000/api/shoppingCart/syncGuestCart', { guestCart: mergedCart }, {
                     headers: {
                         'Authorization': `Bearer ${get().token}`
                     }
                 });
-                get().fetchCartItems();
-                get().fetchCartSummary();
-            } catch (error) {
-                console.error('Error syncing cart items:', error);
+                await get().fetchCartItems();
+                await get().fetchCartSummary();
             }
+            resolve(); // Resolve the promise when the operation is complete
+        } catch (error) {
+            console.error('Error syncing cart items:', error);
+            reject(error); // Reject the promise with the error
         }
-    },
+    }),
+
 
     fetchCartSummary: async () => {
         if (get().isAuthenticated) {
@@ -239,9 +234,9 @@ const useStore = create((set, get) => ({
                     }
                 });
                 set({ cartSummary: response.data });
-                
+
             } catch (error) {
-                if (error.response && error.response.status === 404) {
+                if (error.response && error.response.status !== 404) {
                     set({ cartSummary: { totalPrice: 0, totalItems: 0 } }); // Set cartSummary to an object with totalPrice and totalItems set to 0
                 }
                 console.error('Failed to fetch cart summary:', error);

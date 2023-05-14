@@ -223,6 +223,14 @@ export default function Navigation() {
                 Home
             </ListItem>
 
+            <ListItem button onClick={handleDrawerToggle} component={Link} to="/payment">
+                Payment
+            </ListItem>
+
+            <ListItem button onClick={handleDrawerToggle} component={Link} to="/product-list">
+                Product
+            </ListItem>
+
             {!isAuthenticated ? (
                 <>
                     <ListItem button onClick={handleDrawerToggle} component={Link} to="/login">
@@ -238,9 +246,6 @@ export default function Navigation() {
                 </ListItem>
             )}
 
-            <ListItem button onClick={handleDrawerToggle} component={Link} to="/payment">
-                Payment
-            </ListItem>
 
             {isAuthenticated && role === 'user' && (
                 <ListItem button onClick={handleDrawerToggle} component={Link} to="/profile">
@@ -330,6 +335,13 @@ export default function Navigation() {
 
                     </Hidden>
                     <Hidden smDown>
+                        <Button color="inherit" component={Link} to="/payment">
+                            Payment
+                        </Button>
+
+                        <Button color="inherit" component={Link} to="/product-list">
+                            Product
+                        </Button>
 
                         {!isAuthenticated && (
                             <>
@@ -342,9 +354,6 @@ export default function Navigation() {
                             </>
                         )}
 
-                        <Button color="inherit" component={Link} to="/payment">
-                            Payment
-                        </Button>
 
                         {isAuthenticated && role === 'user' && (
                             <UsersMenu

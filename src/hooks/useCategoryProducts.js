@@ -1,4 +1,3 @@
-// hooks/useCategoryProducts.js
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -11,7 +10,7 @@ const useCategoryProducts = (categoryId) => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:5000/api/products/category/${categoryId}`);
+                const response = await axios.get(`http://localhost:5000/api/products/category/no-limit/${categoryId}`);
                 setProducts(response.data);
                 // console.log("Fetched products:", response.data);
                 setLoading(false);
