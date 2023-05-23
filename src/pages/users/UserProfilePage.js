@@ -6,10 +6,12 @@ import { Snackbar } from '@mui/material';
 import Alert from '@mui/material/Alert';
 
 export default function UserProfilePage() {
+  // eslint-disable-next-line
   const [formData, setFormData] = useState(null);
+  // eslint-disable-next-line
   const [avatarData, setAvatarData] = useState(null);
   const [localAvatarUrl, setLocalAvatarUrl] = useState(useStore((state) => state.avatarUrl));
-  // Get the token from the cookie using js-cookie
+      // Get the token from the cookie using js-cookie  
   const token = useStore((state) => state.token);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { userData } = useStore((state) => ({ userData: state.userData }));

@@ -5,13 +5,16 @@ const useCategoryProducts = (categoryId) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [categoryPage, setCategoryPage] = useState(1);
+    const [categoryTotalPages, setCategoryTotalPages] = useState(1);
 
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:5000/api/products/category/no-limit/${categoryId}`);
-                setProducts(response.data);
+                const response = await axios.get(`http://localhost:5000/api/products/category/${categoryId}?limit=4&page=${categoryPage}`);
+                setProducts(response.data.products);
+                setCategoryTotalPages(response.data.totalPages)
                 // console.log("Fetched products:", response.data);
                 setLoading(false);
             } catch (err) {
@@ -23,7 +26,7 @@ const useCategoryProducts = (categoryId) => {
         if (categoryId) {
             fetchProducts();
         }
-    }, [categoryId]);
+    }, [categoryId, categoryPage]);
 
     const updateProductStock = async (productId, newStock) => {
         try {
@@ -43,7 +46,7 @@ const useCategoryProducts = (categoryId) => {
 
     }
 
-    return { products, loading, error, updateProductStock };
+    return { products, loading, error, updateProductStock, categoryTotalPages, setCategoryPage, categoryPage };
 };
 
 export default useCategoryProducts;

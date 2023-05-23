@@ -4,10 +4,14 @@ import ForgotPasswordForm from '../../components/auth/ForgotPasswordForm'
 import axios from 'axios'
 
 export default function ForgotPasswordPage() {
+    // eslint-disable-next-line
     const [formData, setFormData] = useState(null);
+    // eslint-disable-next-line
     const [isLoading, setIsLoading] = useState(false);
     const [successAlert, setSuccessAlert] = useState(false);
+    // eslint-disable-next-line
     const [errorAlert, setErrorAlert] = useState(false);
+    // eslint-disable-next-line
     const [errorAlertMessage, setErrorAlertMessage] = useState('');
     const navigate = useNavigate();
 

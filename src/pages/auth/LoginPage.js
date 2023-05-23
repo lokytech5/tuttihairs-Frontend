@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 export default function LoginPage() {
     const [formData, setFormData] = useState(null);
+    // eslint-disable-next-line
     const [isLoading, setIsLoading] = useState(false);
     const [successAlert, setSuccessAlert] = useState(false);
     const [errorAlert, setErrorAlert] = useState(false);
@@ -23,7 +24,7 @@ export default function LoginPage() {
 
 
     const addLoginHandler = async (loginData) => {
-        console.log("logindata username", loginData.username);
+      
 
         setSuccessAlert(false);
         setErrorAlert(false);
@@ -37,6 +38,7 @@ export default function LoginPage() {
                 setSuccessAlert(true);
                 const username = loginData.username
                 const token = response.data.token;
+                localStorage.setItem('token', token);
                 const decodedToken = jwt_decode(token);
                 const userId = decodedToken._id;
                 console.log('Decoded Token:', decodedToken);
@@ -47,7 +49,9 @@ export default function LoginPage() {
                 setUsername(username);
                 console.log("Username set in store:", useStore.getState().username);
                 loadUser(token);
-                
+                fetchCartItems();
+                fetchCartSummary();
+
                 syncLocalStorageCart().then(() => {
                     setTimeout(() => {
                         navigate('/');
@@ -57,7 +61,7 @@ export default function LoginPage() {
                 });
             }
         } catch (error) {
-            console.log('Error:', error);
+           
             if (error.response.status === 400) {
                 setErrorAlert(true);
                 setErrorAlertMessage('Invalid username or password');

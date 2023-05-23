@@ -3,15 +3,18 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import Cookies from 'js-cookie';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
+
 
 import ResetPasswordForm from '../../components/auth/ResetPasswordForm'
 export default function ResetPasswordPage() {
+    // eslint-disable-next-line
     const [formData, setFormData] = useState(null);
+    // eslint-disable-next-line
     const [isLoading, setIsLoading] = useState(false);
     const [successAlert, setSuccessAlert] = useState(false);
+    // eslint-disable-next-line
     const [errorAlert, setErrorAlert] = useState(false);
+    // eslint-disable-next-line
     const [errorAlertMessage, setErrorAlertMessage] = useState('');
     const navigate = useNavigate();
     // Get the token from the URL

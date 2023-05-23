@@ -12,7 +12,6 @@ import {
   Container,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Link from '@mui/material/Link';
 import { styled } from "@mui/system";
@@ -54,7 +53,6 @@ const formValidationSchema = z.object({
 
 export default function RegisterForm(props) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
   const {
     register,
     handleSubmit,

@@ -45,7 +45,7 @@ export default function FeaturedSwiper() {
                         <Box
                             sx={{
                                 position: 'relative',
-                                height: '400px',
+                                height: '500px',
                                 backgroundImage: `url(${item.image})`,
                                 backgroundPosition: 'center',
                                 backgroundSize: 'cover',

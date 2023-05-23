@@ -7,7 +7,9 @@ import Stack from '@mui/material/Stack';
 
 
 export default function RegisterPage() {
+    // eslint-disable-next-line
     const [formData, setFormData] = useState(null);
+    // eslint-disable-next-line
     const [isLoading, setIsLoading] = useState(false);
     const [successAlert, setSuccessAlert] = useState(false);
     const [errorAlert, setErrorAlert] = useState(false);

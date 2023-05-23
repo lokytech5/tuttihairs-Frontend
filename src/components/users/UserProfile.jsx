@@ -12,8 +12,6 @@ import {
 } from '@mui/material';
 import { styled } from "@mui/system";
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import useStore from '../../zustand/store'
 
 const UserProfileContainer = styled(Container)(({ theme }) => ({
     paddingTop: theme.spacing(4),
@@ -38,13 +36,6 @@ const UserProfileAvatar = styled(Avatar)(({ theme }) => ({
     marginBottom: theme.spacing(1),
 }));
 
-// const UserProfilePaper = styled(Paper)(({ theme }) => ({
-//     padding: theme.spacing(2),
-//     display: 'flex',
-//     flexDirection: 'column',
-//     alignItems: 'center',
-// }));
-
 const FormContainer = styled('div')(({ theme }) => ({
     width: '100%',
     marginTop: theme.spacing(1),
@@ -64,7 +55,6 @@ const formValidationSchema = z.object({
 export default function UserProfile(props) {
     const { localAvatarUrl } = props;
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
     const {
         register,
         handleSubmit,

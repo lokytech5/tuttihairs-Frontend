@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import useCategories from '../../hooks/useCategories'
+import React from 'react'
 import {
     Card,
     CardActionArea,
@@ -9,10 +8,7 @@ import {
     Typography,
     Button,
     Grid,
-    Box,
 } from '@mui/material';
-import Pagination from '@mui/material/Pagination';
-import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -26,7 +22,6 @@ const CustomGrid = styled(Grid)(({ theme }) => ({
 
 export default function Categories({ categories, page }) {
     const navigate = useNavigate();
-    const theme = useTheme();
 
 
 
@@ -38,7 +33,7 @@ export default function Categories({ categories, page }) {
         <>
             {categories.map((category) => (
                 <CustomGrid item xs={12} sm={6} md={4} lg={3} key={category._id}>
-                    <Card>
+                    <Card sx={{minHeight: 300}}>
                         <CardActionArea>
                             <CardMedia
                                 component="img"
@@ -55,10 +50,10 @@ export default function Categories({ categories, page }) {
                                 </Typography>
                             </CardContent>
                         </CardActionArea>
-                        <CardActions sx={{ justifyContent: 'center' }}>
+                        <CardActions sx={{ justifyContent: 'center', mb: 2 }}>
                             <Button
                                 variant="contained"
-                                color="primary"
+                                color="secondary"
                                 startIcon={<VisibilityIcon />}
                                 onClick={() => handleViewProducts(category._id)}
                             >

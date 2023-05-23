@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Grid, Card, InputAdornment, CardContent, CardMedia, FormControl, Typography, CardActions, Button, TextField, InputLabel, Select, MenuItem, Pagination, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Grid, IconButton, Card, Snackbar, InputAdornment, CardContent, CardMedia, FormControl, Typography, CardActions, Button, TextField, InputLabel, Select, MenuItem, Pagination, List, ListItem, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import useProductList from '../../hooks/useProduct';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
+import useStore from '../../zustand/store';
 
 export default function ProductList() {
   const [search, setSearch] = useState("");
@@ -13,12 +15,16 @@ export default function ProductList() {
   const [page, setPage] = React.useState(1);
   const [categoryPage, setCategoryPage] = React.useState(1);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const addToCart = useStore((state) => state.addToCart);
   const theme = useTheme();
   const navigate = useNavigate();
   
   const { productList,
           categoryProductList,
+          // eslint-disable-next-line
           loading,
+          // eslint-disable-next-line
           error,
           totalPages,
           categories,
@@ -34,6 +40,13 @@ export default function ProductList() {
     }
   }
 
+  const handleCloseSnackbar = (event, reason) => {
+    if(reason === 'clickaway'){
+      return;
+    }
+    setOpenSnackbar(false);
+  }
+
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   }
@@ -44,13 +57,19 @@ export default function ProductList() {
 
   const handleViewProduct = (productId) => {
     // Placeholder function for viewing product details
-    console.log(`Viewing product with ID: ${productId}`);
+    
     navigate(`/productView/${productId}`);
   };
 
   const handleCategoryChange = (categoryId) => {
-    console.log("Selected Category ID: ", categoryId);
+  
     setSelectedCategory(categoryId === "All" ? "" : categoryId);
+  }
+
+  const handleAddToCart = (product) => {
+    console.log(product);
+    addToCart(product);
+    setOpenSnackbar(true);
   }
 
   const categoriesData = [{ _id: "All", name: "All" }, ...categories]
@@ -59,10 +78,10 @@ export default function ProductList() {
   const currentPageToDisplay = selectedCategory ? categoryPage : page; // NEW: to conditionally display the right current page
   const totalPagesToDisplay = selectedCategory ? categoryTotalPages : totalPages;
 
-
+  
   const filteredProducts = productsToDisplay
-    .filter(product =>
-      product.name.toLowerCase().includes(search.toLowerCase()))
+  .filter(product =>
+    product.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
       if (sort === "price_asc") {
         return a.price - b.price;
@@ -72,12 +91,14 @@ export default function ProductList() {
         return 0;
       }
     });
-
-  return (
-    <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+    
+    return (
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ padding: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         
+       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2}}> 
        
+       </Box>
         <TextField
           variant="outlined"
           label="Search Products"
@@ -110,6 +131,7 @@ export default function ProductList() {
 
       <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: 2 }}>
         <Box sx={{ padding: 1, display: 'flex', flexDirection: 'column', width: '20%', marginRight: 2 }}>
+        <Typography variant="h6">Sort by Categories</Typography>
         <List component="nav" aria-label="categories" sx={{ marginTop: 2 }}>
           {categoriesData.map((category, index) => (
             <ListItem button key={index} onClick={() => handleCategoryChange(category._id)}>
@@ -150,7 +172,12 @@ export default function ProductList() {
                 </CardContent>
                 <CardActions>
                   <Box display="flex" justifyContent="space-between" width="100%">
-                    <Button size="small" color="primary" disabled={product.stock === 0} variant="contained" startIcon={<ShoppingCartIcon />}>
+                    <Button size="small"
+                     color="primary" 
+                     disabled={product.stock === 0} 
+                     variant="contained" 
+                     startIcon={<ShoppingCartIcon />}
+                     onClick={() => handleAddToCart(product)}>
                       Add to Cart
                     </Button>
                     <Button size="small" color="secondary" onClick={() => handleViewProduct(product._id)} variant="outlined" startIcon={<VisibilityIcon />}>
@@ -184,6 +211,18 @@ export default function ProductList() {
         </Box>
       </Box>
     </Box>
-         </Box>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        message="Item added to cart"
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        action={
+          <IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseSnackbar}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
+      />
+    </Box>
   );
 }

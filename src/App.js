@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
+import useStore from './zustand/store';
 import Navigation from './components/shared/Navigation';
 import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/auth/LoginPage';
@@ -19,8 +21,16 @@ import CategoryProducts from './components/category/CategoryProducts';
 import CategoryDetails from './components/category/CategoryDetails';
 import Product from './components/products/Product';
 import ProductView from './components/products/ProductView';
+import CuratedCollectionDetails from './components/home/CuratedCollectionDetails';
+import ShoppingCartReview from './components/cart/ShoppingCartReview';
+import ShippingForm from './components/shipping/ShippingForm';
 
 function App() {
+  const loadToken = useStore((state) => state.loadToken);
+
+  useEffect(() => {
+    loadToken();
+  }, [loadToken]);
 
   return (
     <>
@@ -37,10 +47,14 @@ function App() {
           <Route path='/user-profile' element={<UserProfilePage />} />
           <Route path='/user-setting' element={<UserSettingPage />} />
 
+          <Route path='/collection/:collectionId' element={<CuratedCollectionDetails />} />
           <Route path='/categories/:categoryId' element={<CategoryProducts />} />
           <Route path='/product/:productId' element={<CategoryDetails />} />
           <Route path='/product-list' element={<Product />} />
-          <Route path='/productView/:productId' element={<ProductView/>} />
+          <Route path='/productView/:productId' element={<ProductView />} />
+
+          <Route path='/checkout' element={<ShoppingCartReview />} />
+          <Route path='/shipping' element={<ShippingForm />} />
 
 
           <Route path="/admin" element={<ProtectedRoute requiredRole={["admin"]} />} >

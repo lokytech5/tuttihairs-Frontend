@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import {
     Hidden,
@@ -13,20 +13,12 @@ import {
     Toolbar,
     IconButton,
     Typography,
-    TextField,
-    Dialog,
-    DialogContent,
 } from "@mui/material";
 import { styled } from '@mui/system';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
-import Paper from '@mui/material/Paper';
 import CloseIcon from '@mui/icons-material/Close';
-import { alpha } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
 
 import useStore from '../../zustand/store';
@@ -52,58 +44,13 @@ const BrandContainerCentered = styled('div')(({ theme }) => ({
     justifyContent: 'center',
 }));
 
-const Search = styled('div')(({ theme, isSearchExpanded }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: isSearchExpanded ? '100%' : 'auto',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(3),
-        width: 'auto',
-    },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme, isSearchExpanded }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: isSearchExpanded ? 'none' : 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('md')]: {
-            width: '20ch',
-        },
-    },
-}));
-
 const drawerWidth = 300;
 
 export default function Navigation() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchDialogOpen, setSearchDialogOpen] = useState(false);
-    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState(null);
-    const searchInputRef = useRef(null);
     const isAuthenticated = useStore((state) => state.isAuthenticated);
     const userData = useUserStore((state) => state.userData);
     const isLoading = useUserStore((state) => state.isLoading);
@@ -118,6 +65,10 @@ export default function Navigation() {
         : 0;
     const [cartDrawerOpen, setCartDrawerOpen] = React.useState(false);
 
+    useEffect(() => {
+        // Invoke the function to fetch the cart items from your Zustand store
+        useStore.getState().fetchCartItems();
+    }, []);
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -139,32 +90,6 @@ export default function Navigation() {
         setCartDrawerOpen(false);
     };
 
-    const handleSearchIconClick = () => {
-        setIsSearchExpanded(!isSearchExpanded);
-        if (!isSearchExpanded) {
-            setTimeout(() => {
-                searchInputRef.current.focus();
-            }, 100);
-        }
-    };
-
-    //*SearchBar Handler
-    const handleSearch = (event) => {
-        const query = event.target.value;
-        console.log("Search query:", query);
-        // Fetch data or perform any action based on the query
-    };
-
-    //*Handling closing and opening of the searchBar
-    const handleSearchDialogOpen = () => {
-        setSearchDialogOpen(true);
-    };
-
-    const handleSearchDialogClose = () => {
-        setSearchDialogOpen(false);
-    };
-
-  
 
     //*Fetch user Profile and pass to menu
     useEffect(() => {
@@ -192,24 +117,13 @@ export default function Navigation() {
             fetchUserData();
 
         }
-    }, [isAuthenticated]);
-
-    // Simulate data fetching for the search bar
-    useEffect(() => {
-        if (searchQuery) {
-            // Replace this with the actual function to fetch data based on the search query
-            const fetchData = async () => {
-                console.log(`Fetching data for query: ${searchQuery}`);
-            };
-
-            fetchData();
-        }
-    }, [searchQuery]);
+        // eslint-disable-next-line
+    }, [isAuthenticated, token]);
 
     const CartDrawerHeader = () => {
         return (
             <div style={{ padding: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                
+
                 <IconButton onClick={handleCloseCartDrawer}>
                     <CloseIcon />
                 </IconButton>
@@ -221,10 +135,6 @@ export default function Navigation() {
         <List>
             <ListItem button onClick={handleDrawerToggle} component={Link} to="/">
                 Home
-            </ListItem>
-
-            <ListItem button onClick={handleDrawerToggle} component={Link} to="/payment">
-                Payment
             </ListItem>
 
             <ListItem button onClick={handleDrawerToggle} component={Link} to="/product-list">
@@ -241,7 +151,7 @@ export default function Navigation() {
                     </ListItem>
                 </>
             ) : (
-                <ListItem button onClick={handleDrawerToggle} component={Link}>
+                <ListItem button onClick={() => { handleDrawerToggle(); logout(); }}>
                     Logout
                 </ListItem>
             )}
@@ -264,16 +174,13 @@ export default function Navigation() {
                     Admin
                 </ListItem>
             )}
-
-
-
         </List>
     );
 
 
     return (
         <>
-            <AppBar position="static" sx={{ zIndex: theme => theme.zIndex.drawer + 1 }}>
+            <AppBar position="static" sx={{ zIndex: theme => theme.zIndex.drawer + 1, backgroundColor: '#b68c71', boxShadow: 'none' }}>
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
                     <IconButton
                         edge="start"
@@ -311,33 +218,8 @@ export default function Navigation() {
                         </BrandContainer>
 
                     </Hidden>
-                    
-                    <Hidden mdUp>
-                        <IconButton color="inherit" onClick={handleSearchDialogOpen}>
-                            <Hidden smDown>
-                                <Search isSearchExpanded={isSearchExpanded}>
-                                    <SearchIconWrapper
-                                        isSearchExpanded={isSearchExpanded}
-                                        onClick={handleSearchIconClick}>
 
-                                        <SearchIcon />
-                                    </SearchIconWrapper>
-                                    <StyledInputBase
-                                        ref={searchInputRef}
-                                        placeholder="Search…"
-                                        inputProps={{ 'aria-label': 'search' }}
-                                        onChange={handleSearch}
-                                    />
-                                </Search>
-                            </Hidden>
-                            <SearchIcon />
-                        </IconButton>
-
-                    </Hidden>
                     <Hidden smDown>
-                        <Button color="inherit" component={Link} to="/payment">
-                            Payment
-                        </Button>
 
                         <Button color="inherit" component={Link} to="/product-list">
                             Product
@@ -353,8 +235,7 @@ export default function Navigation() {
                                 </Button>
                             </>
                         )}
-
-
+     
                         {isAuthenticated && role === 'user' && (
                             <UsersMenu
                                 key={avatarUrl}
@@ -398,42 +279,7 @@ export default function Navigation() {
                 {drawerList}
             </Drawer>
 
-            <Dialog
-                open={searchDialogOpen}
-                // onClose={handleSearchDialogClose}
-                fullWidth
-            >
-                <DialogContent>
-                    <Paper
-                        component="form"
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            padding: '2px 4px',
-                            marginBottom: theme.spacing(2),
-                        }}
-                    >
-                        <IconButton
-                            color="primary"
-                            onClick={handleSearchDialogClose}
-                        >
-                            <SearchIcon />
-                        </IconButton>
-                        <TextField
-                            fullWidth
-                            placeholder="Search…"
-                            inputProps={{ 'aria-label': 'search' }}
-                            onChange={handleSearch}
-                        />
-                        <IconButton
-                            color="secondary"
-                            onClick={handleSearchDialogClose}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </Paper>
-                </DialogContent>
-            </Dialog>
+
 
             <Drawer
                 anchor="right"

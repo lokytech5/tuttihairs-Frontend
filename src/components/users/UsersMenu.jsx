@@ -18,10 +18,6 @@ export default function UsersMenu({ anchorEl, handleClose, handleClick, logout, 
         updateAvatarKey();
     }, [avatarUrl]);
 
-    // console.log('userData :', userData);
-    // console.log('Is loading:', isLoading);
-    // console.log('profileImageUrl:', profileImageUrl);
-
     return (
         <>
             <IconButton color="inherit" onClick={handleClick}>

@@ -6,7 +6,6 @@ import { styled } from '@mui/system';
 import StoreIcon from '@mui/icons-material/Store';
 import GroupIcon from '@mui/icons-material/Group';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Box } from '@mui/material';
 
 const drawerWidth = 240;
 

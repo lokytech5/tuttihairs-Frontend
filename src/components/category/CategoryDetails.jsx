@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import useCategoryDetails from '../../hooks/useCategoryDetails'
 import { useParams } from 'react-router-dom'
 import {
+    Alert,
     Card,
     CardContent,
     CardMedia,
@@ -23,7 +24,8 @@ import useCategoryProducts from '../../hooks/useCategoryProducts';
 export default function ProductDetails({ product }) {
     const { productId } = useParams()
     const { categoryDetails, loading, error } = useCategoryDetails(productId)
-    const { products,updateProductStock } = useCategoryProducts()
+    // eslint-disable-next-line
+    const { products, updateProductStock } = useCategoryProducts()
     const [selectedColor, setSelectedColor] = useState('')
     const [selectedInches, setSelectedInches] = useState('')
     const addToCart = useStore((state) => state.addToCart);
@@ -50,7 +52,7 @@ export default function ProductDetails({ product }) {
     }
 
     if (error) {
-        return <div>Error: {error.message}</div>;
+        return <Alert severity="error">{error}</Alert>;  
     }
 
     if (!categoryDetails) {

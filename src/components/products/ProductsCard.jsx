@@ -16,12 +16,13 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+
 import useStore from '../../zustand/store';
 
 export default function ProductsCard({ product, updateProductStock }) {
     const addToCart = useStore((state) => state.addToCart);
-    const userId = useStore((state) => state.userId);
     const navigate = useNavigate();
+    
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
     const handleCloseSnackbar = (event, reason) => {
@@ -37,12 +38,11 @@ export default function ProductsCard({ product, updateProductStock }) {
 
     const handleAddToCart = (productId) => {
         // Add the product to the cart
-        addToCart(product, userId, productId);
+        addToCart(product);
         setSnackbarOpen(true);
         const newStock = product.stock - 1;
         updateProductStock(productId, newStock);
     };
-
 
     return (
         <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -97,8 +97,8 @@ export default function ProductsCard({ product, updateProductStock }) {
                         </Button>
                     )}
                 </CardActions>
-            </Card>
 
+            </Card>
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={6000}

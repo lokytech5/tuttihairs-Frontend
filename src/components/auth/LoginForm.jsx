@@ -7,7 +7,6 @@ import { Container, Typography, TextField, Button, Paper, Avatar } from '@mui/ma
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Link from '@mui/material/Link';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -44,7 +43,6 @@ const formValidationSchema = z.object({
 export default function LoginForm(props) {
     const [showPassword, setShowPassword] = useState(false);
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
     const {
         register,
         handleSubmit,

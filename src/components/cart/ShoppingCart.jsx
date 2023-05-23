@@ -16,28 +16,33 @@ export default function ShoppingCart() {
   const navigate = useNavigate();
 
   const handleCheckoutClick = () => {
+    console.log('Proceed to Checkout button clicked');
     if (!isAuthenticated) {
+      console.log('User is not authenticated. Redirecting to login page');
       navigate('/login');
     } else {
       // Redirect to the checkout page or perform any other action required
+      console.log('User is authenticated. Redirecting to checkout page');
       navigate('/checkout');
     }
   };
-
+  
   const handleRemoveFromCart = (productId) => {
-    console.log("Removing item with productId:", productId);
+   
     if (!productId) {
-      console.error('Product ID is undefined');
+     
       return;
     }
     removeFromCart(productId);
   };
-
-
+  
+  
   useEffect(() => {
-    fetchCartSummary();
+    
     fetchCartItems();
-  }, [fetchCartSummary, fetchCartItems]);
+    fetchCartSummary();
+  }, [fetchCartItems, fetchCartSummary]);
+  console.log("re-render after cartItems and cart summary update")
   console.log("Cart items:", cartItems);
 
   return (
@@ -50,7 +55,8 @@ export default function ShoppingCart() {
       ) : (
         <List>
           {cartItems.map((item, index) => (
-            <React.Fragment key={item._id || index}>
+
+            <React.Fragment key={item.product._id || index}>
               {console.log("Item:", item)}
               <ListItem>
                 <ListItemAvatar>
@@ -63,10 +69,12 @@ export default function ShoppingCart() {
                   primary={item.name}
                   secondary={`Price: $${item.price} x ${item.quantity}`}
                 />
+                {console.log("Product object for item:", item.product)}
+
                 <IconButton
                   edge="end"
                   aria-label="delete"
-                  onClick={() => handleRemoveFromCart(item._id || item.product_id)}
+                  onClick={() => handleRemoveFromCart(item.product._id)}
                 >
                   <DeleteIcon color="error" />
                 </IconButton>
@@ -78,7 +86,7 @@ export default function ShoppingCart() {
       )}
 
       <Box mt={2}>
-        <Typography variant="h6">Total Price: ${cartSummary.totalPrice.toFixed(2)}</Typography>
+        <Typography variant="h6">Total Price: ${(cartSummary.totalPrice || 0).toFixed(2)}</Typography>
       </Box>
 
       <Box mt={2}>
