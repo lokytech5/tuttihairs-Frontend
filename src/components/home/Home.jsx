@@ -17,17 +17,35 @@ import Categories from './Categories'
 import PromoSection from './PromoSection'
 import FeaturedSwiper from './FeaturedSwiper';
 import CuratedCollection from './CuratedCollection';
-import backgroundImage from '../../assets/tuti-5.jpg'
+import backgroundImage from '../../assets/tuti-2.png'
+import { alpha } from '@mui/system';
 
 const BackgroundImageBox = styled(Paper)(({ theme }) => ({
     py: 2,
     height: '500px',
     width: '100%',
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    [theme.breakpoints.up('md')]: {
+        height: '750px',
+    },
+}));
+
+const TextSection = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.spacing(2),
+}));
+
+const ImageSection = styled(Box)(({ theme }) => ({
     backgroundImage: `url(${backgroundImage})`,
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    position: 'relative',
+    height: '100%',
 }));
 
 export default function Home() {
@@ -38,7 +56,7 @@ export default function Home() {
 
     const currentHour = new Date().getHours();
     let greeting;
-    if(currentHour < 12){
+    if (currentHour < 12) {
         greeting = 'Good Morning';
     } else if (currentHour < 18) {
         greeting = 'Good Afternoon';
@@ -54,43 +72,102 @@ export default function Home() {
         <>
             <Box>
                 <BackgroundImageBox>
-                    <Box p={2}>
-                        <Typography
-                            variant="h2"
-                            align="center"
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            height: '100%',
+                            backgroundImage: `url(${backgroundImage})`,
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundSize: 'cover',
+                            overflow: 'hidden',
+                            '::after': {
+                                content: '""',
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                width: '100%',
+                                height: '100%',
+                                background: 'rgba(0, 0, 0, .5)',
+                                transform: 'translate(-50%, -50%) rotate(-45deg)',
+                                zIndex: 1,
+                            },
+                        }}
+                    >
+                        <Box
                             sx={{
-                                fontFamily: 'Roboto',
-                                fontWeight: 500,
-                                fontSize: 'bold',
-                                color: '#fff',
+                                position: 'relative',
+                                zIndex: 2,
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                flexDirection: 'column',
                             }}
                         >
-                            {greeting}, Welcome to Tuti Hairs
-                        </Typography>
-                        <Typography
-                            variant="h5"
-                            align="center"
-                            sx={{
-                                fontFamily: 'Roboto',
-                                fontWeight: 300,
-                                color: '#fff',
-                                marginTop: '1rem',
-                            }}
-                        >
-                            Discover the Best Products at Unbeatable Prices
-                        </Typography>
-                        <Box display="flex" justifyContent="center" mt={2}>
+                            <Typography
+                                variant="h2"
+                                align="center"
+                                sx={{
+                                    fontFamily: 'Roboto, Arial, sans-serif',
+                                    fontWeight: 'bold',
+                                    letterSpacing: '2px',
+                                    marginBottom: '2rem',
+                                    textTransform: 'uppercase',
+                                    fontSize: '3rem', // Increase text size
+                                    background: 'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                }}
+                            >
+                                Global ecommerce shop
+                            </Typography>
+                            <Typography
+                                variant="h5"
+                                align="center"
+                                sx={{
+                                    fontFamily: 'Roboto, Arial, sans-serif',
+                                    fontWeight: 300,
+                                    color: '#fff',
+                                    letterSpacing: '1px',
+                                    marginBottom: '2rem',
+                                }}
+                            >
+                                {greeting}, Welcome to Tuti Hairs
+                            </Typography>
+                            <Typography
+                                variant="body1"
+                                align="center"
+                                sx={{
+                                    fontFamily: 'Roboto, Arial, sans-serif',
+                                    fontWeight: 300,
+                                    color: '#fff',
+                                    letterSpacing: '1px',
+                                    marginBottom: '2rem',
+                                }}
+                            >
+                                Discover the Best Products at Unbeatable Prices
+                            </Typography>
                             <Button
-                                variant="contained"
-                                color="secondary"
+                                variant="outlined"
                                 size="large"
+                                sx={{
+                                    borderRadius: '50px',
+                                    borderColor: '#fff',
+                                    color: '#fff',
+                                    textTransform: 'uppercase',
+                                    ':hover': {
+                                        backgroundColor: alpha('#ff5252', 0.1),
+                                    },
+                                }}
                             >
                                 Start Shopping
                             </Button>
                         </Box>
                     </Box>
-
                 </BackgroundImageBox>
+
 
                 <Container maxWidth="lg">
                     <Box my={4}>
@@ -125,13 +202,13 @@ export default function Home() {
 
                     </Box>
 
-                <Box my={2}>
-                    <PromoSection />
-                </Box>
+                    <Box my={2}>
+                        <PromoSection />
+                    </Box>
 
-                <Box>
-                <FeaturedSwiper/>
-                </Box>
+                    <Box>
+                        <FeaturedSwiper />
+                    </Box>
                 </Container>
 
 

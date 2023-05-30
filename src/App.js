@@ -10,12 +10,14 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 import PaymentPage from './pages/payment/PaymentPage';
+import PaymentSucessfulPage from './components/payment/PaymentSucessfulPage'
 
 import AdminPage from './pages/admin/AdminPanelPage';
 import ProtectedRoute from './private/ProtectedRoute';
 
 import UserProfilePage from './pages/users/UserProfilePage';
 import UserSettingPage from './pages/users/UserSettingPage';
+import UserOrders from './components/users/UserOrders';
 
 import CategoryProducts from './components/category/CategoryProducts';
 import CategoryDetails from './components/category/CategoryDetails';
@@ -24,9 +26,14 @@ import ProductView from './components/products/ProductView';
 import CuratedCollectionDetails from './components/home/CuratedCollectionDetails';
 import ShoppingCartReview from './components/cart/ShoppingCartReview';
 import ShippingForm from './components/shipping/ShippingForm';
+import OrderReview from './components/shipping/OrderReview';
+import AboutMe from './components/about/AboutMe';
+import TrainingClassPage from './components/trainingClasses/TrainingClassPage';
+import TrainingClassForm from './components/trainingClasses/TrainingClassForm';
 
 function App() {
   const loadToken = useStore((state) => state.loadToken);
+
 
   useEffect(() => {
     loadToken();
@@ -43,9 +50,11 @@ function App() {
           <Route path='/forgot-password' element={<ForgotPasswordPage />} />
           <Route path='/reset-password' element={<ResetPasswordPage />} />
           <Route path='/payment' element={<PaymentPage />} />
+          <Route path='/thankyou' element={<PaymentSucessfulPage />} />
 
           <Route path='/user-profile' element={<UserProfilePage />} />
           <Route path='/user-setting' element={<UserSettingPage />} />
+          <Route path='/user-orders' element={<UserOrders />} />
 
           <Route path='/collection/:collectionId' element={<CuratedCollectionDetails />} />
           <Route path='/categories/:categoryId' element={<CategoryProducts />} />
@@ -55,6 +64,11 @@ function App() {
 
           <Route path='/checkout' element={<ShoppingCartReview />} />
           <Route path='/shipping' element={<ShippingForm />} />
+          <Route path='/orderReview/:orderId' element={<OrderReview />} />
+
+          <Route path='/about' element={<AboutMe />} />
+          <Route path='/training' element={<TrainingClassPage />} />
+          <Route path='/register/:classId' element={<TrainingClassForm />} />
 
 
           <Route path="/admin" element={<ProtectedRoute requiredRole={["admin"]} />} >

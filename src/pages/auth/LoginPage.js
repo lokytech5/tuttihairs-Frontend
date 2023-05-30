@@ -19,12 +19,12 @@ export default function LoginPage() {
     const loadUser = useStore((state) => state.loadUser);
     const syncLocalStorageCart = useStore((state) => state.syncLocalStorageCart);
     const fetchCartSummary = useStore((state) => state.fetchCartSummary);
-    const fetchCartItems = useStore((state) => state.fetchCartItems); 
+    const fetchCartItems = useStore((state) => state.fetchCartItems);
 
 
 
     const addLoginHandler = async (loginData) => {
-      
+
 
         setSuccessAlert(false);
         setErrorAlert(false);
@@ -41,13 +41,11 @@ export default function LoginPage() {
                 localStorage.setItem('token', token);
                 const decodedToken = jwt_decode(token);
                 const userId = decodedToken._id;
-                console.log('Decoded Token:', decodedToken);
                 const avatar = response.data.avatar;
 
                 setAuthenticated(true, avatar);
                 useStore.getState().setUserId(userId);
                 setUsername(username);
-                console.log("Username set in store:", useStore.getState().username);
                 loadUser(token);
                 fetchCartItems();
                 fetchCartSummary();
@@ -61,7 +59,7 @@ export default function LoginPage() {
                 });
             }
         } catch (error) {
-           
+
             if (error.response.status === 400) {
                 setErrorAlert(true);
                 setErrorAlertMessage('Invalid username or password');
@@ -74,7 +72,7 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     }
-    
+
     return (
         <>
             {successAlert && (

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import {
   Box, Button, Divider, Typography, List, ListItem, ListItemText, ListItemAvatar, IconButton, Avatar,
 } from '@mui/material';
@@ -16,34 +16,30 @@ export default function ShoppingCart() {
   const navigate = useNavigate();
 
   const handleCheckoutClick = () => {
-    console.log('Proceed to Checkout button clicked');
     if (!isAuthenticated) {
-      console.log('User is not authenticated. Redirecting to login page');
       navigate('/login');
     } else {
       // Redirect to the checkout page or perform any other action required
-      console.log('User is authenticated. Redirecting to checkout page');
       navigate('/checkout');
     }
   };
-  
-  const handleRemoveFromCart = (productId) => {
-   
-    if (!productId) {
-     
-      return;
-    }
-    removeFromCart(productId);
-  };
-  
-  
+
+  const handleRemoveFromCart = useCallback(
+    (productId) => () => {
+      if (!productId) {
+        return;
+      }
+      removeFromCart(productId);
+    },
+    [removeFromCart]
+  );
+
+
   useEffect(() => {
-    
+
     fetchCartItems();
     fetchCartSummary();
   }, [fetchCartItems, fetchCartSummary]);
-  console.log("re-render after cartItems and cart summary update")
-  console.log("Cart items:", cartItems);
 
   return (
     <Box>
@@ -57,7 +53,6 @@ export default function ShoppingCart() {
           {cartItems.map((item, index) => (
 
             <React.Fragment key={item.product._id || index}>
-              {console.log("Item:", item)}
               <ListItem>
                 <ListItemAvatar>
                   <Avatar
@@ -69,12 +64,11 @@ export default function ShoppingCart() {
                   primary={item.name}
                   secondary={`Price: $${item.price} x ${item.quantity}`}
                 />
-                {console.log("Product object for item:", item.product)}
 
                 <IconButton
                   edge="end"
                   aria-label="delete"
-                  onClick={() => handleRemoveFromCart(item.product._id)}
+                  onClick={handleRemoveFromCart(item.product._id)}
                 >
                   <DeleteIcon color="error" />
                 </IconButton>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,13 +26,13 @@ const ShippingButton = styled(Button)(({ theme }) => ({
 }));
 
 const formValidationSchema = z.object({
-    address: z.string().nonempty('Address is required'),
-    city: z.string().nonempty('City is required'),
-    state: z.string().nonempty('State is required'),
-    postalCode: z.string().nonempty('Postal code is required'),
-    shippingMethod: z.string().nonempty('Shipping method is required'),
-    phone: z.string().nonempty('Phone number is required'),
-    name: z.string().nonempty('Name is required'),
+    address: z.string().nonempty('Address is required').min(5, 'Address must be at least 5 characters').max(100, 'Address must not exceed 100 characters'),
+    city: z.string().nonempty('City is required').min(2, 'City must be at least 2 characters').max(50, 'City must not exceed 50 characters'),
+    state: z.string().nonempty('State is required').min(2, 'State must be at least 2 characters').max(50, 'State must not exceed 50 characters'),
+    postalCode: z.string().nonempty('Postal code is required').min(5, 'Postal code must be at least 5 characters').max(10, 'Postal code must not exceed 10 characters'),
+    method: z.string().nonempty('Shipping method is required'),
+    phone: z.string().nonempty('Phone number is required').min(10, 'Phone number must be at least 10 digits').max(15, 'Phone number must not exceed 15 digits'),
+    name: z.string().nonempty('Name is required').min(2, 'Name must be at least 2 characters').max(50, 'Name must not exceed 50 characters'),
 })
 
 export default function ShippingForm() {
@@ -41,6 +42,7 @@ export default function ShippingForm() {
     const cartItems = useStore((state) => state.cartItems);
     const userId = useStore((state) => state.userId);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -48,15 +50,20 @@ export default function ShippingForm() {
     } = useForm({
         resolver: zodResolver(formValidationSchema),
         defaultValues: {
-            shippingMethod: 'standard',
+            method: 'standard',
         }
     });
-
     const handleFormSubmit = async (data) => {
         setOpenSnackbar(false);
+        // Map over cartItems to extract only product._id and quantity
+    const items = cartItems.map(item => ({
+        product: item.product._id,  // replace the product object with its _id
+        quantity: item.quantity
+    }));
+
         const orderData = {
             user: userId,
-            items: cartItems,
+            items: items,
             shipping: {
                 name: data.name,
                 address: data.address,
@@ -64,16 +71,21 @@ export default function ShippingForm() {
                 state: data.state,
                 postalCode: data.postalCode,
                 phone: data.phone,
-                shippingMethod: data.shippingMethod,
-            }
+                method: data.method,
+            },
         };
-        console.log(orderData)
-       const result = await createOrder(orderData);
-       if(result) {
-           setOpenSnackbar(true);
-       } else {
-
-       }
+        console.log('formData', orderData)
+        try {
+            const orderDataResponse = await createOrder(orderData);
+            if (orderDataResponse && orderDataResponse.id !== undefined) { // New console log
+                setOpenSnackbar(true);
+                navigate(`/orderReview/${orderDataResponse.id}`)
+            } else {
+                console.log("Order not created, order is:", orderDataResponse); // New console log
+            }
+        } catch (err) {
+            console.error("Error creating order:", err.message); // New console log
+        }
     };
 
     const handleCloseSnackbar = (event, reason) => {
@@ -84,7 +96,7 @@ export default function ShippingForm() {
     }
 
     const handleRadioChange = (event) => {
-        setValue('shippingMethod', event.target.value);
+        setValue('method', event.target.value);
     };
   return (
         <Container
@@ -196,7 +208,7 @@ export default function ShippingForm() {
                       <FormControl component="fieldset" margin="normal" required>
                           <FormLabel component="legend">Shipping Method</FormLabel>
                           <RadioGroup aria-label="shippingMethod"
-                           name="shippingMethod"
+                           name="method"
                             onChange={handleRadioChange} 
                             row>
                               <FormControlLabel value="standard" control={<Radio />} label="Standard - #1000" />

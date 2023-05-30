@@ -55,6 +55,7 @@ export default function Navigation() {
     const userData = useUserStore((state) => state.userData);
     const isLoading = useUserStore((state) => state.isLoading);
     const setUserData = useUserStore((state) => state.setUserData);
+    const setUserEmail = useStore((state) => state.setUserEmail);
     const setIsLoading = useUserStore((state) => state.setIsLoading);
     const role = useStore((state) => state.role);
     const token = useStore((state) => state.token);
@@ -79,7 +80,7 @@ export default function Navigation() {
     };
 
     const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(event.target);
     };
 
     const handleCartIconClick = () => {
@@ -106,6 +107,7 @@ export default function Navigation() {
                 setIsLoading(false);
                 // Store the avatar URL in the local state using the correct field name
                 setAvatarUrl(response.data.user.avatar);
+                setUserEmail(response.data.user.email);
             } catch (error) {
                 console.error('Error fetching user data:', error);
             } finally {
@@ -139,6 +141,12 @@ export default function Navigation() {
 
             <ListItem button onClick={handleDrawerToggle} component={Link} to="/product-list">
                 Product
+            </ListItem>
+            <ListItem button onClick={handleDrawerToggle} component={Link} to="/training">
+                Training
+            </ListItem>
+            <ListItem button onClick={handleDrawerToggle} component={Link} to="/about">
+                About us
             </ListItem>
 
             {!isAuthenticated ? (
@@ -180,7 +188,7 @@ export default function Navigation() {
 
     return (
         <>
-            <AppBar position="static" sx={{ zIndex: theme => theme.zIndex.drawer + 1, backgroundColor: '#b68c71', boxShadow: 'none' }}>
+            <AppBar position="static" color='primary' sx={{ zIndex: theme => theme.zIndex.drawer + 1, }}>
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
                     <IconButton
                         edge="start"
@@ -225,6 +233,14 @@ export default function Navigation() {
                             Product
                         </Button>
 
+                        <Button color="inherit" component={Link} to="/training">
+                            Training
+                        </Button>
+
+                        <Button color="inherit" component={Link} to="/about">
+                            About us
+                        </Button>
+
                         {!isAuthenticated && (
                             <>
                                 <Button color="inherit" component={Link} to="/login">
@@ -235,7 +251,7 @@ export default function Navigation() {
                                 </Button>
                             </>
                         )}
-     
+
                         {isAuthenticated && role === 'user' && (
                             <UsersMenu
                                 key={avatarUrl}

@@ -2,16 +2,12 @@ import { create } from 'zustand'
 import jwt_decode from 'jwt-decode';
 import axios from 'axios';
 
-
 const removeFromLocalStorage = (productId) => {
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-    console.log('Before removal:', cartItems);
     const updatedCartItems = cartItems.filter((item) => item.product._id !== productId);
-    console.log('After removal:', updatedCartItems);
     localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     return updatedCartItems;
 };
-
 
 const useStore = create((set, get) => ({
     isAuthenticated: false, // You'll update this value after the user logs in
@@ -20,13 +16,15 @@ const useStore = create((set, get) => ({
     role: null, // 'user' or 'admin'
     token: null,
     username: null,
+    userEmail: null,
     avatarUrl: null,
     loading: true,
 
     setUserId: (userId) => set({ userId }),
     setUsername: (username) => set({ username }),
+    setUserEmail: (email) => set({ userEmail: email }),
     setAuthenticated: (isAuth, avatarUrl) => set({ isAuthenticated: isAuth, avatarUrl: avatarUrl }),
-   
+
 
     login: async (id, role, token, username) => {
         set({
@@ -54,6 +52,7 @@ const useStore = create((set, get) => ({
             role: null,
             token: null,
             username: null,
+            userEmail: null,
         });
     },
 
@@ -63,7 +62,6 @@ const useStore = create((set, get) => ({
             const decoded = jwt_decode(token);
             const currentTime = Date.now().valueOf() / 1000;
             if (typeof decoded.exp !== "undefined" && decoded.exp < currentTime) {
-
                 localStorage.removeItem('token');
                 set({ token: null, isAuthenticated: false, loading: false });
             } else {
@@ -104,7 +102,6 @@ const useStore = create((set, get) => ({
     cartItems: [],
     cartSummary: { totalPrice: 0, totalItems: 0 },
     addToCart: async (product, quantity = 1, color = 'black', inches = 32, length = '4x4', grams = '100') => {
-        console.log('addToCart parameters:', product, quantity, color, inches, length, grams);
         const isAuthenticated = get().isAuthenticated;
 
         // Safeguard check to make sure cartItems is always an array
@@ -142,7 +139,6 @@ const useStore = create((set, get) => ({
             });
         } else {
             // If product does not exist in the cart, add it with quantity of 1
-            console.log("newCartItem", newCartItem);
             set((state) => ({
                 cartItems: [...state.cartItems, newCartItem],
             }));
@@ -165,7 +161,6 @@ const useStore = create((set, get) => ({
                 }
             } catch (error) {
                 console.error('Error adding item to cart:', error);
-                console.log('Failed to post the following data to server:', newCartItem);
                 if (error.response && error.response.data) {
                     console.log('Server response:', error.response.data);
                 }
@@ -182,9 +177,7 @@ const useStore = create((set, get) => ({
 
 
     removeFromCart: async (productId) => {
-        console.log('Attempting to remove product with id from local storage:', productId);
         if (!productId) {
-            console.error('Product ID is undefined');
             return;
         }
 
@@ -200,8 +193,6 @@ const useStore = create((set, get) => ({
                     }
                 });
                 const updatedCartItems = get().cartItems.filter((item) => item.product._id !== productId);
-
-                console.log("updatedCartItems", updatedCartItems);
                 set({ cartItems: updatedCartItems });
 
                 // Here is the update to local storage
@@ -238,7 +229,6 @@ const useStore = create((set, get) => ({
                 });
 
                 if (response.data.success) {
-                    console.log("Fetched cart items from server:", response.data.items);
                     get().setCartItems(response.data.items);
                 }
             } catch (error) {
@@ -252,7 +242,6 @@ const useStore = create((set, get) => ({
         } else {
             // Load cart items from local storage for unauthenticated users
             const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-
             set({ cartItems });
         }
         // console.log('Fetched cart items:', get().cartItems);
@@ -263,7 +252,6 @@ const useStore = create((set, get) => ({
         try {
             const localStorageCart = JSON.parse(localStorage.getItem('cartItems')) || [];
             const currentCartItems = get().cartItems;
-            console.log('localStorageCart', localStorage.getItem('cartItems'));
 
             // Merge localStorageCart and currentCartItems
             const mergedCart = [...localStorageCart, ...currentCartItems].reduce((acc, item) => {
@@ -280,7 +268,6 @@ const useStore = create((set, get) => ({
             localStorage.removeItem('cartItems');
             // Update the cart items on the server
             if (get().isAuthenticated) {
-                console.log('Merged cart:', mergedCart);
                 await axios.post('http://localhost:5000/api/shoppingCart/syncGuestCart', { guestCart: mergedCart }, {
                     headers: {
                         'Authorization': `Bearer ${get().token}`
@@ -321,6 +308,32 @@ const useStore = create((set, get) => ({
             const totalPrice = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
 
             set({ cartSummary: { totalPrice, totalItems } });
+        }
+    },
+
+    clearCart: async () => {
+        // Clear the cart items in the state
+        set({ cartItems: [] });
+
+        // Reset the cart summary
+        set({ cartSummary: { totalPrice: 0, totalItems: 0 } });
+
+        // Clear the local storage
+        localStorage.removeItem('cartItems');
+        console.log('Cleared local storage:', localStorage.getItem('cartItems')); 
+
+        if (get().isAuthenticated) {
+            // Call the API to clear the cart on the server for authenticated users
+            try {
+                await axios.delete('http://localhost:5000/api/shoppingCart/empty',{
+                    headers: {
+                        'Authorization': `Bearer ${get().token}`
+                    }
+                });
+                console.log('State after clearing:', get().cartItems, get().cartSummary); 
+            } catch (error) {
+                console.error('Error clearing cart:', error);
+            }
         }
     },
 
