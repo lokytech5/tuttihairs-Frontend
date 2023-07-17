@@ -64,15 +64,16 @@ const useProduct = (page = 1, categoryId, search = '') => {
         fetchCategories();
     }, []);
 
-    return { 
+    return {
         productList,
-        categoryProductList, 
-        loading, 
-        error, 
-        totalPages, 
+        categoryProductList,
+        loading,
+        error,
+        totalPages,
         categories,
         categoryTotalPages,
-        setCategoryPage };
+        setCategoryPage
+    };
 }
 
 export default useProduct;

@@ -18,12 +18,18 @@ const useStore = create((set, get) => ({
     username: null,
     userEmail: null,
     avatarUrl: null,
+    trainingClassId: null,
+    phoneNumber: '',
     loading: true,
+    trainingClassOrder: {},
 
     setUserId: (userId) => set({ userId }),
     setUsername: (username) => set({ username }),
     setUserEmail: (email) => set({ userEmail: email }),
     setAuthenticated: (isAuth, avatarUrl) => set({ isAuthenticated: isAuth, avatarUrl: avatarUrl }),
+    setTrainingClassId: (id) => set({ trainingClassId: id }),
+    setPhoneNumber: (phoneNumber) => set({ phoneNumber }),
+    setTrainingClassOrder: (trainingClassOrder) => set({ trainingClassOrder }),
 
 
     login: async (id, role, token, username) => {
@@ -320,17 +326,17 @@ const useStore = create((set, get) => ({
 
         // Clear the local storage
         localStorage.removeItem('cartItems');
-        console.log('Cleared local storage:', localStorage.getItem('cartItems')); 
+        console.log('Cleared local storage:', localStorage.getItem('cartItems'));
 
         if (get().isAuthenticated) {
             // Call the API to clear the cart on the server for authenticated users
             try {
-                await axios.delete('http://localhost:5000/api/shoppingCart/empty',{
+                await axios.delete('http://localhost:5000/api/shoppingCart/empty', {
                     headers: {
                         'Authorization': `Bearer ${get().token}`
                     }
                 });
-                console.log('State after clearing:', get().cartItems, get().cartSummary); 
+                console.log('State after clearing:', get().cartItems, get().cartSummary);
             } catch (error) {
                 console.error('Error clearing cart:', error);
             }

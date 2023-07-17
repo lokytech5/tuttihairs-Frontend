@@ -20,7 +20,7 @@ export default function CuratedCollectionDetails() {
     }
 
     if (error) {
-       return <Alert severity="error">{error}</Alert>;  
+        return <Alert severity="error">{error}</Alert>;
     }
 
     // Return early if the data is not yet available.

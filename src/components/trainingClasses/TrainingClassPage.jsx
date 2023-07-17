@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CircularProgress, Box, Chip, Button, Alert, Card, CardContent, CardMedia, Typography, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import useTrainingClass from '../../hooks/useTrainingClass';
+import useStore from '../../zustand/store';
+import LoginDialog from '../LoginDialog';
 
 const CardImage = styled(CardMedia)(({ theme }) => ({
   paddingTop: '56.25%', // 16:9 Aspect Ratio
@@ -10,8 +12,12 @@ const CardImage = styled(CardMedia)(({ theme }) => ({
 
 
 export default function TrainingClassPage() {
-  const navigate = useNavigate()
   const { trainingClass, loading, error } = useTrainingClass();
+  const setTrainingClassId = useStore(state => state.setTrainingClassId)
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
 
 
   if (loading) {
@@ -22,8 +28,18 @@ export default function TrainingClassPage() {
     return <Alert severity="error">{error}</Alert>;
   }
 
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+
   const registerButtonHandler = (classId, classPrice) => {
-    navigate(`/register/${classId}`, { state: { classPrice } });
+    if (!isAuthenticated) {
+      handleClickOpen();
+    } else {
+      console.log(`Register button clicked with Class ID: ${classId}`);
+      setTrainingClassId(classId);
+      navigate(`/register/${classId}`, { state: { classPrice } });
+    }
   }
 
   return (
@@ -47,9 +63,13 @@ export default function TrainingClassPage() {
                   </Typography>
                 </CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', pt: 2, mb: 10 }}>
-                  <Button variant="contained" color="primary" onClick={() => registerButtonHandler(classItem._id, classItem.type.price)}>
-                    Register
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => registerButtonHandler(classItem._id, classItem.type.price)}>
+                    Enroll
                   </Button>
+                  <LoginDialog open={open} handleClose={handleClose} />
                 </Box>
               </Card>
             </Grid>

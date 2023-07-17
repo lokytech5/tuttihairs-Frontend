@@ -28,7 +28,7 @@ export default function RegisterPage() {
                 setSuccessAlert(true);
 
                 setTimeout(() => {
-                    navigate('/login');
+                    navigate('/email-sent');
                 }, 2000);
             }
         } catch (error) {

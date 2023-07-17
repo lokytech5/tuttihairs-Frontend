@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
     Container,
@@ -6,6 +7,7 @@ import {
     Typography,
     Paper,
     Button,
+    Link,
     CircularProgress,
     TextField,
 } from '@mui/material';
@@ -121,7 +123,7 @@ export default function Home() {
                                     WebkitTextFillColor: 'transparent',
                                 }}
                             >
-                                Global ecommerce shop
+                                Tuti's Online Hair Product Store
                             </Typography>
                             <Typography
                                 variant="h5"
@@ -149,21 +151,23 @@ export default function Home() {
                             >
                                 Discover the Best Products at Unbeatable Prices
                             </Typography>
-                            <Button
-                                variant="outlined"
-                                size="large"
-                                sx={{
-                                    borderRadius: '50px',
-                                    borderColor: '#fff',
-                                    color: '#fff',
-                                    textTransform: 'uppercase',
-                                    ':hover': {
-                                        backgroundColor: alpha('#ff5252', 0.1),
-                                    },
-                                }}
-                            >
-                                Start Shopping
-                            </Button>
+                            <RouterLink to={"/product-list"}>
+                                <Button
+                                    variant="outlined"
+                                    size="large"
+                                    sx={{
+                                        borderRadius: '50px',
+                                        borderColor: '#fff',
+                                        color: '#fff',
+                                        textTransform: 'uppercase',
+                                        ':hover': {
+                                            backgroundColor: alpha('#ff5252', 0.1),
+                                        },
+                                    }}
+                                >
+                                    Start Shopping
+                                </Button>
+                            </RouterLink>
                         </Box>
                     </Box>
                 </BackgroundImageBox>

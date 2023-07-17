@@ -1,4 +1,5 @@
 import { Box, Typography, Button } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 export default function PromoSection() {
     const promo = {
@@ -28,9 +29,12 @@ export default function PromoSection() {
             <Typography variant="body1" gutterBottom>
                 {promo.description}
             </Typography>
-            <Button variant="contained" onClick={() => { }}>
-                {promo.buttonText}
-            </Button>
+
+            <RouterLink to={"/product-list"}>
+                <Button variant="contained" onClick={() => { }}>
+                    {promo.buttonText}
+                </Button>
+            </RouterLink>
         </Box>
     );
 };

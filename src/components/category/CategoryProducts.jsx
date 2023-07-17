@@ -16,7 +16,7 @@ export default function CategoryProducts() {
     }
 
     if (error) {
-        return <Alert severity="error">{error}</Alert>;  
+        return <Alert severity="error">{error}</Alert>;
     }
 
     const handlePageChange = (event, value) => {

@@ -10,6 +10,7 @@ import {
     Box,
     CardActions,
     Button,
+    Rating,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -22,7 +23,7 @@ import useStore from '../../zustand/store';
 export default function ProductsCard({ product, updateProductStock }) {
     const addToCart = useStore((state) => state.addToCart);
     const navigate = useNavigate();
-    
+
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
     const handleCloseSnackbar = (event, reason) => {
@@ -33,7 +34,7 @@ export default function ProductsCard({ product, updateProductStock }) {
     };
 
     const handleViewProduct = (productId) => {
-        navigate(`/product/${productId}`);
+        navigate(`/productView/${productId}`);
     };
 
     const handleAddToCart = (productId) => {
@@ -58,6 +59,7 @@ export default function ProductsCard({ product, updateProductStock }) {
                         <Typography gutterBottom variant="h5" component="div">
                             {product.name}
                         </Typography>
+                        <Rating value={product.averageRating} readOnly />
                         <Typography variant="body2" color="text.secondary">
                             {product.description}
                         </Typography>

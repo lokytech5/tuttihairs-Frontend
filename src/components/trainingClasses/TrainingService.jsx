@@ -37,7 +37,7 @@ export default function TrainingService() {
     function ServiceCard({ service }) {
         return (
             <>
-                
+
 
                 <Card sx={{ maxWidth: 185, marginRight: 2, marginLeft: 2 }}>
                     <CardContent
