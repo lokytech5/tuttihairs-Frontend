@@ -22,6 +22,7 @@ const useStore = create((set, get) => ({
     phoneNumber: '',
     loading: true,
     trainingClassOrder: {},
+    selectedServices: [],
 
     setUserId: (userId) => set({ userId }),
     setUsername: (username) => set({ username }),
@@ -30,6 +31,14 @@ const useStore = create((set, get) => ({
     setTrainingClassId: (id) => set({ trainingClassId: id }),
     setPhoneNumber: (phoneNumber) => set({ phoneNumber }),
     setTrainingClassOrder: (trainingClassOrder) => set({ trainingClassOrder }),
+
+
+
+    toggleServiceSelection: (service) => set(state => ({
+        selectedServices: state.selectedServices.some(s => s._id === service._id)
+            ? state.selectedServices.filter(s => s._id !== service._id)
+            : [...state.selectedServices, service]
+    })),
 
 
     login: async (id, role, token, username) => {

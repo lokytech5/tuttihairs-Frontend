@@ -3,6 +3,7 @@ import useService from "../../hooks/useService";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import useStore from "../../zustand/store";
 import ServicePriceContext, { ServicePriceProvider } from "../context/ServicePriceContext";
 import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, CircularProgress, Alert, Box, Card, CardContent, Typography, Pagination, Button } from "@mui/material";
 export default function TrainingService() {
@@ -10,13 +11,16 @@ export default function TrainingService() {
     const navigate = useNavigate();
     const { servicePrices, setServicePrices } = useContext(ServicePriceContext)
     const { service, loading, error, servicePages } = useService(page);
+    const toggleServiceSelection = useStore(state => state.toggleServiceSelection);
 
     // State for managing the modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
+    const [calculatedServices, setCalculatedServices] = useState([]);
 
     // Update serviceButtonHandler to open the modal
     const serviceButtonHandler = (service) => {
+        setCalculatedServices(prevServices => [...prevServices, service]);
         setSelectedService(service);
         setIsModalOpen(true);
     }
@@ -85,6 +89,7 @@ export default function TrainingService() {
                             Cancel
                         </Button>
                         <Button onClick={() => {
+                            toggleServiceSelection(selectedService);
                             setServicePrices(prevServices => [...prevServices, selectedService.price]);
                             setIsModalOpen(false);
                         }}>

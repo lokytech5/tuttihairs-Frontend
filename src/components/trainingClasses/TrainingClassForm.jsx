@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -9,6 +9,7 @@ import {
     TextField,
     Paper,
     Container,
+    Box,
     CircularProgress,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -16,6 +17,8 @@ import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import { styled } from "@mui/system";
 import useTrainingClass from '../../hooks/useTrainingClass';
 import useStore from '../../zustand/store';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css'
 
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -51,6 +54,9 @@ export default function TrainingClassForm() {
     const { fetchRegisteredTrainingClass, loading } = useTrainingClass();
     const trainingClassId = useStore((state) => state.trainingClassId)
     const setPhoneNumber = useStore(state => state.setPhoneNumber);
+    const selectedServices = useStore((state) => state.selectedServices);
+    const [phone, setPhone] = useState('')
+    const [phoneValid, setPhoneValid] = useState(true)
 
     const {
         register,
@@ -66,9 +72,11 @@ export default function TrainingClassForm() {
         const trainingClassData = {
             firstName: data.firstName,
             lastName: data.lastName,
-            phone: data.phone,
+            phone: phone,
+            selectedServices: selectedServices.map(service => service._id),
         }
         setPhoneNumber(data.phone);
+        console.log(`Training Class ID: ${trainingClassId}`);
         const response = await fetchRegisteredTrainingClass(trainingClassData, trainingClassId)
         if (response.error) {
             console.log(response.error)
@@ -132,27 +140,36 @@ export default function TrainingClassForm() {
                             helperText={errors.lastName ? errors.lastName.message : ''}
                         />
 
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="phone"
-                            label="Phone Number"
-                            name="phone"
-                            autoComplete="phone"
-                            autoFocus
-                            {...register('phone')}
-                            error={errors.phone ? true : false}
-                            helperText={errors.phone ? errors.phone.message : ''}
-                        />
+                        <Box mt={2}>
+                            <PhoneInput
+                                country={'ng'}
+                                onlyCountries={['ng']}
+                                value={phone}
+                                onChange={value => {
+                                    if (value.startsWith('2340')) {
+                                        setPhone('234' + value.slice(4));
+                                    } else {
+                                        setPhone(value);
+                                    }
+                                }}
+                                placeholder="Phone Number"
+                                inputStyle={{
+                                    width: '100%',
+                                    height: '55px',
+                                    padding: '10px',
+                                    paddingLeft: '40px',
+                                    fontSize: '16px',
+                                }}
+                            />
+                        </Box>
+
 
                         <RegisterButton
                             type="submit"
                             fullWidth
                             variant="contained"
                             color="primary"
-                            disabled={loading}
+                            disabled={loading || !phoneValid}
                         >
                             {loading ? <CircularProgress size={24} /> : 'Register'}
                         </RegisterButton>

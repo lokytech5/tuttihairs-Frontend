@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { useState, useCallback } from 'react'
-import useStore from '../zustand/store';
 
 export default function useOrder() {
     const [order, setOrder] = useState([]);
     const [error, setError] = useState('');
+    const [completePurchase, setCompletePurchase] = useState(null);
     const [loading, setLoading] = useState(false);
     const token = localStorage.getItem('token')
 
@@ -71,6 +71,26 @@ export default function useOrder() {
         
     }, []);
 
-    return { order, createOrder, fetchOrderById, fetchOrdersByUserId, loading, error }
+
+    const completePurchaseHandler = async (orderId) => {
+        setLoading(true);
+        try {
+            const response = await axios.put(`http://localhost:5000/api/orders/${orderId}`, { status: 'Processing' }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            setCompletePurchase(response.data);
+            setLoading(false);
+            return response.data;
+        } catch (error) {
+            console.error('Error verifying Paystack transaction:', error.message)
+            setError(error.message);
+            setLoading(false);
+            return error.message;
+        }
+    }
+
+    return { order, createOrder, fetchOrderById, fetchOrdersByUserId, completePurchase, completePurchaseHandler, loading, error }
 
 }

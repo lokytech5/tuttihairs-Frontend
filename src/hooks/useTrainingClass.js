@@ -4,7 +4,8 @@ import useStore from '../zustand/store';
 export default function useTrainingClass() {
     const [trainingClass, setTrainingClass] = useState({ trainingClasses: [] });
     const [verifiyPhoneNumber, setVerifiyPhoneNumber] = useState({})
-    const [trainingClassId, setTrainingClassId] = useState('')
+    const [trainingClassPayment, setTrainingClassPayment] = useState({})
+    const trainingClassId = useStore((state) => state.trainingClassId)
     const [registeredTrainingClassData, setRegisteredTrainingClassData] = useState({})
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -12,7 +13,7 @@ export default function useTrainingClass() {
     const token = useStore((state) => state.token);
     const setTrainingClassOrder = useStore((state) => state.setTrainingClassOrder);
     const trainingClassOrder = useStore((state) => state.trainingClassOrder);
-
+    const userId = useStore(state => state.userId);
 
     useEffect(() => {
         const fetchTrainingClass = async () => {
@@ -37,7 +38,6 @@ export default function useTrainingClass() {
 
     const fetchTrainingClassOrder = async (orderId) => {
         setLoading(true);
-        console.log('fetching training class order, id:', orderId);
         try {
             const response = await axios.get(`http://localhost:5000/api/trainingClassOrders/${orderId}`, {
                 headers: {
@@ -45,9 +45,7 @@ export default function useTrainingClass() {
                     'Authorization': `Bearer ${token}`
                 }
             })
-            console.log("Order Response:", response.data);
             setTrainingClassOrder(response.data);
-            console.log('Order set in state:', response.data);
             setLoading(false);
         } catch (error) {
             console.log('Error fetching order:', error.message);
@@ -58,7 +56,6 @@ export default function useTrainingClass() {
 
     const fetchRegisteredTrainingClass = async (registeredData, trainingClassId) => {
         setLoading(true);
-        console.log('Registering training class, id:', trainingClassId);
         try {
             const response = await axios.post(`http://localhost:5000/api/trainingClasses/${trainingClassId}/register`, registeredData, {
                 headers: {
@@ -67,7 +64,6 @@ export default function useTrainingClass() {
                 }
             })
 
-            console.log('Registration response:', response.data);
             setRegisteredTrainingClassData(response.data);
             await fetchTrainingClassOrder(response.data.orderId);
             setLoading(false);
@@ -79,8 +75,6 @@ export default function useTrainingClass() {
             return { error: error.message };
         }
     }
-
-
 
     const fetchVerifyPhoneNumber = async (code) => {
         const phoneData = {
@@ -100,12 +94,38 @@ export default function useTrainingClass() {
         }
     }
 
-
+    const completeTrainingClassPaymentHandler = async() => {
+        setLoading(true);
+        try {
+            const response = await axios.put(`http://localhost:5000/api/trainingClasses/${trainingClassId}/updatePaymentStatus/${userId}`)
+            setTrainingClassPayment(response.data);
+            setLoading(false);
+            return response.data;
+        } catch (error) {
+            console.error('Error verifying Paystack transaction:', error.message)
+            setError(error.message);
+            setLoading(false);
+            return error.message; 
+        }
+    }
 
     return {
-        trainingClass, fetchTrainingClassOrder,
+        trainingClass, fetchTrainingClassOrder, completeTrainingClassPaymentHandler,
         trainingClassOrder, registeredTrainingClassData,
         fetchVerifyPhoneNumber, fetchRegisteredTrainingClass,
         loading, error
     };
 }
+
+
+
+// useEffect(() => {
+    //         await axios.put(`http://localhost:5000/api/trainingClasses/${trainingClassId}/updatePaymentStatus/${userId}`)
+    //                                    .then((response) => {
+    //                                     setTrainingClassPayment(response.data)
+    //                                    })
+    //                                    .catch((err) => {
+    //                                        setError(err.message)
+    //                                    })
+    //     }
+    // }, [])

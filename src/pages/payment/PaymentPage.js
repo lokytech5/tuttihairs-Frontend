@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import PaymentGateWay from '../../components/payment/PaymentGateWay';
+import EcommercePayment from '../../components/payment/EcommercePayment';
+import TrainingClassOrder from '../../components/trainingClasses/TrainingClassOrder';
 
 export default function PaymentPage() {
     const [loading, setLoading] = useState(false);
@@ -21,10 +22,16 @@ export default function PaymentPage() {
 
     return (
         <>
-            <PaymentGateWay
+            <EcommercePayment
                 onAddPayment={addPaymentGateWayHandler}
                 isLoading={loading}
             />
+
+            <TrainingClassOrder
+                onAddPayment={addPaymentGateWayHandler}
+                isLoading={loading}
+                />
+           
         </>
 
     )
