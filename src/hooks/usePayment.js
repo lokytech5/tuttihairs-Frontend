@@ -6,6 +6,7 @@ export default function usePayment(endpoint) {
     const [verification, setVerification] = useState(null);
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    
 
 
     const paymentGateWayHandler = async (paymentData) => {
